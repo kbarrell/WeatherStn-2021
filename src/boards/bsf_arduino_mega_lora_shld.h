@@ -1,14 +1,16 @@
 /*******************************************************************************
  * 
- *  File:         bsf_adafruit_feather_m0_lora.h
+ *  File:         bsf_arduino_mega_lora_shld.h
  * 
- *  Function:     Board Support File for Adafruit Feather M0 RFMx LoRa.
+ *  Function:     Board Support File for Arduino Mega 2560 +  RFMx LoRa.
+ *                ****  NEEDS IMPLEMENTATION -  THIS CONTENT FOR FEATHER M0 ***
  * 
  *  Copyright:    Copyright (c) 2021 Leonel Lopes Parente
  * 
  *  License:      MIT License. See accompanying LICENSE file.
  * 
  *  Author:       Leonel Lopes Parente
+ *                Kevin Barrell
  * 
  *  Description:  This board has onboard USB (provided by the MCU).
  *                It supports automatic firmware upload and serial over USB.
