@@ -3,7 +3,6 @@
  *  File:         bsf_arduino_mega_lora_shld.h
  * 
  *  Function:     Board Support File for Arduino Mega 2560 +  RFMx LoRa.
- *                ****  NEEDS IMPLEMENTATION -  THIS CONTENT FOR FEATHER M0 ***
  * 
  *  Copyright:    Copyright (c) 2021 Leonel Lopes Parente
  * 
@@ -16,9 +15,6 @@
  *                It supports automatic firmware upload and serial over USB.
  *                No onboard display. Optionally an external display can be connected.
  * 
- *                ██ DIO1 MUST BE MANUALLY WIRED TO GPIO6 (see below) ██
- * 
- *                GPIO6 is what Adafruit uses in their tutorial.
  * 
  *                Connect DIO1 and optional display
  *                according to below connection details.
@@ -41,23 +37,23 @@
  *
  *                SPI/LoRa            GPIO
  *                ---                 ----
- *                MOSI  <――――――――――>  23  (MOSI)
- *                MISO  <――――――――――>  22  (MISO)
- *                SCK   <――――――――――>  24  (SCK)
- *                NSS   <――――――――――>   8
- *                RST   <――――――――――>   4
- *                DIO0  <――――――――――>   3
- *                DIO1  <---------->   6  ██ NOT WIRED on PCB ██
- *                DIO2                 -  Not needed for LoRa
+ *                MOSI  <――――――――――>  51  (MOSI)
+ *                MISO  <――――――――――>  50  (MISO)
+ *                SCK   <――――――――――>  52  (SCK)
+ *                NSS   <――――――――――>   10
+ *                RST   <――――――――――>   9
+ *                DIO0  <――――――――――>   2
+ *                DIO1  <――――――――――>   6  
+ *                DIO2  <――――――――――>   7  
  *
- *  Docs:         https://docs.platformio.org/en/latest/boards/atmelsam/adafruit_feather_m0.html 
- *                https://learn.adafruit.com/the-things-network-for-feather/arduino-wiring    
+ *  Docs:         https://docs.platformio.org/en/latest/boards/atmelavr/megaatmega2560.html
+ *                 
  *
  *  Identifiers:  LMIC-node
- *                    board-id:      adafruit_feather_m0_lora
+ *                    board-id:      megaatmmega2560
  *                PlatformIO
- *                    board:         adafruit_feather_m0
- *                    platform:      atmelsam
+ *                    board:         megaatmmega2560
+ *                    platform:      atmelavr
  *                Arduino
  *                    board:         ARDUINO_SAMD_FEATHER_M0
  *                    architecture:  ARDUINO_ARCH_SAMD
@@ -66,12 +62,12 @@
 
 #pragma once
 
-#ifndef BSF_ADAFRUIT_FEATHER_M0_LORA_H_
-#define BSF_ADAFRUIT_FEATHER_M0_LORA_H_
+#ifndef BSF_ARDUINO_MEGA_LORA_SHLD_H_
+#define BSF_ARDUINO_MEGA_LORA_SHLD_H_
 
 #include "LMIC-node.h"
 
-#define DEVICEID_DEFAULT "feather-m0"  // Default deviceid value
+#define DEVICEID_DEFAULT "megaatmega2560"  // Default deviceid value
 
 // Wait for Serial
 // Can be useful for boards with MCU with integrated USB support.
@@ -84,10 +80,10 @@
 
 // Pin mappings for LoRa tranceiver
 const lmic_pinmap lmic_pins = {
-    .nss = 8,
+    .nss = 10,
     .rxtx = LMIC_UNUSED_PIN,
-    .rst = 4,
-    .dio = { /*dio0*/ 3, /*dio1*/ 6, /*dio2*/ LMIC_UNUSED_PIN }
+    .rst = 9,
+    .dio = { /*dio0*/ 2, /*dio1*/ 6, /*dio2*/ 7 }
 #ifdef MCCI_LMIC
     ,
     .rxtx_rx_active = 0,
@@ -135,4 +131,4 @@ bool boardInit(InitType initType)
 }
 
 
-#endif  // BSF_ADAFRUIT_FEATHER_M0_LORA_H_
+#endif  // BSF_ARDUINO_MEGA_LORA_SHLD_H_
