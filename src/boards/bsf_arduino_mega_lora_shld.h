@@ -71,7 +71,7 @@
 
 // Wait for Serial
 // Can be useful for boards with MCU with integrated USB support.
-#define WAITFOR_SERIAL_SECONDS_DEFAULT 10   // -1 waits indefinitely  
+//#define WAITFOR_SERIAL_SECONDS_DEFAULT 10   // -1 waits indefinitely  
 
 // LMIC Clock Error
 // This is only needed for slower 8-bit MCUs (e.g. 8MHz ATmega328 and ATmega32u4).
@@ -93,7 +93,7 @@ const lmic_pinmap lmic_pins = {
 };
 
 #ifdef USE_SERIAL
-    Serial_& serial = Serial;
+    HardwareSerial& serial = Serial;
 #endif    
 
 #ifdef USE_LED
