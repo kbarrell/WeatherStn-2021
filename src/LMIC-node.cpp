@@ -59,7 +59,109 @@
 
 
 const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
+#include <SPI.h>
+#include <cactus_io_BME280_I2C.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
+#include "TimerOne.h"     // Timer Interrupt set to 2.5 sec for read sensors
+#include <math.h>
+#include <Wire.h>         // For accessing RTC
+#include <SD2405RTC.h>    // For Gravity RTC breakout board.   Set RTC to UTC time
+#include <TimeLib.h>      // For epoch time en/decode
+#include <Timezone.h>	  // For AU Eastern STD/DST so that daily readings are 24hr to 9am (local)
+
+// Sensor-related definitions
+// Set hardware pin assignments & pre-set constants
+#define TX_Pin 4 				   // used to indicate web data tx
+#define ONE_WIRE_BUS_PIN 29 	  //Data bus pin for DS18B20's
+
+#define WindSensor_Pin (18)       //The pin location of the anemometer sensor
+#define WindVane_Pin  (A13)       // The pin connecting to the wind vane sensor
+#define VaneOffset  0		   // The anemometer offset from magnetic north
+#define Bucket_Size  0.2 	   // mm bucket capacity to trigger tip count
+#define RG11_Pin  19        		 // Interrupt pin for rain sensor
+#define BounceInterval  15		// Number of ms to allow for debouncing
+#define SampleInt_Pin   3		// Interrupt pin for RTC-generated sampling clock (when used)
+
+// Set timer related settings for sensor sampling & calculation
+#define Timing_Clock  500000    //  0.5sec in millis
+#define Sample_Interval   5		//  = number of Timing_Clock cycles  i.e. 2.5sec interval
+#define Report_Interval   120    //  = number of sample intervals contributing to each upload report (each 5 min)
+#define Speed_Conversion  1.4481   // convert rotations to km/h.  = 2.25/(Sample_Interval x Timing_Clock)* 1.609 
+									// refer Davis anemometer technical spec
+//#define TIMER_FROM_RTC 1		// Uncomment this line if timing clock for sampler drawn from RTC frequency interrupt
+									
+volatile bool isSampleRequired;    		// set true every Sample_Interval.   Get wind speed
+volatile unsigned int timerCount;  		// used to determine when Sample_Interval is reached
+volatile unsigned int sampleCount;		// used to determin when Report_Interval is reached
+volatile unsigned long rotations;  		// cup rotation counter for wind speed calcs
+volatile unsigned long contactBounceTime;  // Timer to avoid contact bounce in wind speed sensor
+volatile float windSpeed, windGust;        // speed in km per hour
+
+volatile unsigned long tipCount;  	 	// rain bucket tipcounter used in interrupt routine
+volatile unsigned long contactTime; 	// timer to manage contact bounce in interrupt routine
+volatile unsigned long obsRainfallCount; // total count of rainfall tips recorded in observatoin period (5min)
+volatile float obsReportRainfallRate;    	// total amount of rainfall in the reporting period  (5 min)
+volatile unsigned long dailyRainfallCount;	//  total count of rainfall tips in 24 hrs to 9am (local time)
+const float reportIntervalSec = Report_Interval * Sample_Interval * float(Timing_Clock) / 1000000;
+
+// Define structures for handling reporting via TTN
+typedef struct obsSet {
+	uint16_t 	windGustX10; // observed windgust speed (km/h) X10  ~range 0 -> 1200
+	uint16_t	windGustDir; // observed wind direction of Gust (compass degrees)  0 -> 359
+	uint16_t	tempX10;	// observed temp (°C) +100 x 10   ~range -200->600
+	uint16_t	humidX10;	// observed relative humidty (%) x 10   range 0->1000
+	uint16_t 	pressX10;	// observed barometric pressure at station level (hPa)  x 10  ~range 8700 -> 11000 
+	uint16_t	rainflX10;	// observed accumulated rainfall (mm) x10   ~range 0->1200
+	uint16_t	windspX10;	// observed windspeed (km/h) x10 ~range 0->1200
+	uint16_t	windDir;	// observed wind direction (compass degrees)  range 0->359
+	uint16_t	dailyRainX10; //  accumulated rainfall (mm) X10 for period to 9am daily
+	uint16_t	casetempX10;		// station case temperature (for alarming)
+ } obsSet;
+		
+union obsPayload
+{
+	obsSet	obsReport;
+	uint8_t	readAccess[sizeof(obsSet)];
+}sensorObs[2];
+
+// AU Eastern Time Zone (Sydney, Melbourne)   Use next 3 lines for one time setup to be written to EEPROM
+//TimeChangeRule auEDST = {"AEDT", First, Sun, Oct, 2, 660};    //Daylight time = UTC + 11:00 hours
+//TimeChangeRule auESTD = {"AEST", First, Sun, Apr, 2, 600};     //Standard time = UTC + 10:00 hours
+//Timezone auEastern(auEDST, auESTD);
+
+// If TimeChangeRules are already stored in EEPROM, comment out the three
+// lines above and uncomment the line below.
+Timezone auEastern(100);       // assumes rules stored at EEPROM address 100 & that RTC set to UTC
+TimeChangeRule *tcr;		// pointer to the timechange rule
+time_t utc, localTime;
+boolean	dailyTotalsDue;		// flags that totals for 24hr to 9am local are to be reported & reset
+
+int  currentObs, reportObs;   //References which obsPayload [0 or 1]is being filled vs. reported 
+int vaneValue;         	 	//  raw analog value from wind vane
+int vaneDirection;          //  translated 0-360 direction
+int calDirection, calGustDirn;     	//  converted value with offset applied
+const int count = 4;				// average the last 4 wind directions
+int boxcar[count];					// stack of wind direction values for averaging calculation
+const bool BaseRange = true;
+const bool ExtdRange = false;
+
+// Schedule TX every this many seconds (might become longer due to duty
+// cycle limitations).
+const unsigned TX_INTERVAL = 300 ;		// 5 min reporting cycle
+const int EOD_HOUR = 9;			// Daily totals are reset at 9am (local);
+
+//  Create BME280 object
+    BME280_I2C bme;     // I2C using address 0x77
+
+    // Setup a oneWire instance to communicate with OneWire devices
+    OneWire oneWire(ONE_WIRE_BUS_PIN);
+    DallasTemperature DSsensors(&oneWire);    // Pass the OneWire reference to Dallas Temperature lib
+
+// Assign the addresses of the DS18B20 sensors (determined by reading them previously)
+DeviceAddress airTempAddr = { DS18_AIR_ADDR };
+DeviceAddress caseTempAddr = { DS18_CASE_ADDR };
 
 //  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▀ █▀█ █▀▄
 //  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▀ █ █ █ █
@@ -67,7 +169,7 @@ const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
 
 
 uint8_t payloadBuffer[payloadBufferLength];
-static osjob_t doWorkJob;
+static osjob_t doWorkJob;    //static osjob_t sendjob;  (from WthrStn1.0)
 uint32_t doWorkIntervalSeconds = DO_WORK_INTERVAL_SECONDS;  // Change value in platformio.ini
 
 // Note: LoRa module pin mappings are defined in the Board Support Files.
@@ -552,6 +654,7 @@ void onEvent(ev_t ev)
 
         case EV_TXSTART:
             setTxIndicatorsOn();
+            digitalWrite(TX_Pin, HIGH);		//  Tx/Rx LED ON for external visual
             printEvent(timestamp, ev);            
             break;               
 
@@ -584,6 +687,7 @@ void onEvent(ev_t ev)
         case EV_TXCOMPLETE:
             // Transmit completed, includes waiting for RX windows.
             setTxIndicatorsOn(false);   
+            digitalWrite(TX_Pin, LOW);		// Tx/Rx LED off
             printEvent(timestamp, ev);
             printFrameCounters();
 
@@ -627,6 +731,20 @@ void onEvent(ev_t ev)
     }
 }
 
+void do_send(osjob_t* j){
+
+    // Check if there is not a current TX/RX job running
+    if (LMIC.opmode & OP_TXRXPEND) {
+        Serial.println(F("OP_TXRXPEND, not sending"));
+    } else {
+        // Prepare upstream data transmission at the next possible time.
+        LMIC_setTxData2(1, sensorObs[reportObs].readAccess, sizeof(obsSet), 0);     // Use the last completed set of obs
+        Serial.println(F("Packet queued"));
+        Serial.print(F("Sending packet on frequency: "));
+        Serial.println(LMIC.freq);
+    }
+    // Next TX is scheduled after TX_COMPLETE event.
+}
 
 static void doWorkCallback(osjob_t* job)
 {
@@ -803,6 +921,129 @@ void processDownlink(ostime_t txCompleteTimestamp, uint8_t fPort, uint8_t* data,
     }          
 }
 
+// Interrupt handler routine for timer interrupt
+void isr_timer() {
+	
+	timerCount++;
+
+	if(timerCount == Sample_Interval) {
+		// convert to km/h using the formula V=P(2.25/T)*1.609 where T = sample interval
+		// i.e. V = P(2.25/2.5)*1.609 = P * Speed_Conversion factor  (=1.4481  for 2.5s interval)
+		windSpeed = rotations * Speed_Conversion; 
+		rotations = 0;   
+		isSampleRequired = true;
+		timerCount = 0;						// Restart the interval count
+	}
+}
+
+// Interrupt handler routine to increment the rotation count for wind speed
+void isr_rotation ()   {
+
+  if ((millis() - contactBounceTime) > BounceInterval ) {  // debounce the switch contact.
+    rotations++;
+    contactBounceTime = millis();
+  }
+}
+
+// Interrrupt handler routine that is triggered when the rg-11 detects rain   
+void isr_rg ()   { 
+
+   if ((millis() - contactTime) > BounceInterval ) {  // debounce of sensor signal
+      tipCount++;
+      contactTime = millis();
+   } 
+} 
+
+//  Calculate average of 'count' readings using boxcar method
+int average(int value)
+{
+  static int i;
+  static long sum=0;
+
+  sum -= boxcar[i];  //remove oldest value from sum
+  boxcar[i] = value;  // add new value to array
+  sum += boxcar[i]; // add new value to sum
+
+  i++;
+  if (i == count) i=0;
+  return sum/count;
+}
+
+// Get Wind Direction
+void getWindDirection(bool baseRange) {
+	static int recentAvgDirn = 0;		// average of last 3 adjusted measurements
+	int altReading, deltaAsRead, deltaExtd;		// candidate alternative to raw direction measurement
+	
+	if (baseRange) {		// take a reading in standard 0-360 deg. range
+		vaneValue = analogRead(WindVane_Pin);
+		vaneDirection = map(vaneValue, 0, 1023, 0, 359);
+		calDirection = vaneDirection + VaneOffset;
+		if(calDirection > 360)
+			calDirection = calDirection - 360;
+		return;			// returns value via calDirection
+	}   
+	
+	// Here (baseRange is FALSE) we find if +/- 360 gives a reading closer to the most recent wind direction
+	// Does not take a new direction reading - uses the last one 
+	// This averaging is only invoked for directions included in the 5 min reports
+	if (calDirection > 270) altReading	= calDirection - 360;
+	else if (calDirection < 90) altReading = calDirection + 360;
+	else altReading = calDirection;
+	
+	deltaAsRead = abs(calDirection - recentAvgDirn);
+	deltaExtd = abs(altReading - recentAvgDirn);
+	calDirection = (deltaAsRead < deltaExtd) ? calDirection : altReading;
+	
+	// Update the average etc
+	recentAvgDirn = average(calDirection);
+}
+
+// Field format utility for printing
+void print2digits(int number)  {
+	if (number >= 0 && number <10) {
+		Serial.write('0');
+	}
+	Serial.print(number);
+}
+
+// Check if a report is the last of a daily sequence.  Relies on window open +/- 1hr 
+//  either side of EOD_HOUR
+boolean resetDaily(time_t localTime, int windowOpensHr, int windowClosesHr) {
+	int checkHour = hour(localTime);
+	if ((checkHour < windowOpensHr) || (checkHour >= windowClosesHr)) {
+		dailyTotalsDue = true;
+		return false; 		// Outside the reset time window
+	}
+	if (dailyTotalsDue) {
+		if (checkHour == EOD_HOUR) {
+			dailyTotalsDue = false;
+			return true;
+		}
+		if ((minute(localTime) + TX_INTERVAL/60) < 60 ) {
+			dailyTotalsDue = true;
+			return false;    // Next report will still be ahead of EOD_HOUR
+		}
+		else {
+			dailyTotalsDue = false;
+			return true;	//  Next report period should start from zero daily totals
+		}
+	}
+	else return false;
+}
+				
+
+// Print utility for packed structure
+void printIt(uint8_t *charArray, int length) {
+  int i;
+	char charMember;
+	Serial.print("buff length:"); Serial.println(length);
+	for (i=0; i<length; i++) {
+		charMember = charArray[i];
+		Serial.println(charMember, BIN);
+	}
+	Serial.println("===EndOfBuffer========");
+}
+
 
 //  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▀ █▀█ █▀▄
 //  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▀ █ █ █ █
@@ -849,6 +1090,61 @@ void setup()
 //  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀
 
     // Place code for initializing sensors etc. here.
+    
+
+    setSyncProvider(RTC.get);
+    setSyncInterval(500);     // resync system time to RTC every 500 sec
+
+
+    // prepare obsPayload selection indices
+    currentObs = 0;
+	reportObs = 1;
+	dailyTotalsDue = true;
+  
+	// initialise anemometer values
+	rotations = 0;
+	isSampleRequired = false;
+	windGust = 0;
+	calGustDirn = 0;
+  
+	// setup RG11 rain totals & conversion factor
+	obsRainfallCount = 0;
+	obsReportRainfallRate = 0.0;
+	dailyRainfallCount = 0;
+  
+	// setup timer values
+	timerCount = 0;
+	sampleCount = 0;
+	
+  
+	// Initialise the Temperature measurement library & set sensor resolution to 12 (10) bits
+	DSsensors.setResolution(airTempAddr, 12);
+	DSsensors.setResolution(caseTempAddr, 10);
+ 
+	if (!bme.begin())  {    
+      Serial.println("Could not find BME280 sensor -  check wiring");
+     while (1);
+	}
+
+	
+    // Setup pins & interrupts	
+	pinMode(TX_Pin, OUTPUT);
+	pinMode(WindSensor_Pin, INPUT);
+	pinMode(RG11_Pin, INPUT);
+
+	attachInterrupt(digitalPinToInterrupt(WindSensor_Pin), isr_rotation, FALLING);
+	attachInterrupt(digitalPinToInterrupt(RG11_Pin),isr_rg, FALLING);
+	
+	//Setup the timer for 0.5s
+	#ifdef TIMER_FROM_RTC
+		// For RTC-generated clock timer
+		pinMode(SampleInt_Pin, INPUT_PULLUP);
+		attachInterrupt(digitalPinToInterrupt(SampleInt_Pin), isr_timer, FALLING); 
+	#else
+		// timer drawn from internal MCU Timer1 interrupt
+		Timer1.initialize(Timing_Clock);     
+		Timer1.attachInterrupt(isr_timer);
+	#endif
 
     resetCounter();
 
@@ -863,10 +1159,67 @@ void setup()
 
     // Schedule initial doWork job for immediate execution.
     os_setCallback(&doWorkJob, doWorkCallback);
+    	
+	sei();   // Enable Interrupts
+	
 }
 
 
 void loop() 
 {
+    if(isSampleRequired) {
+		sampleCount++;
+		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
+		bme.readSensor();					// Read humidity & barometric pressure
+	
+		getWindDirection(BaseRange);			//  Read dirn in range 0 - 360 deg.
+		
+		if (windSpeed > windGust) {      // Check last sample of windspeed for new Gust record
+			windGust = windSpeed;
+			calGustDirn = calDirection;
+		}
+			
+
+	//  Does this sample complete a reporting cycle?   If so, prepare payload.
+		if (sampleCount == Report_Interval) {
+			obsRainfallCount = tipCount - dailyRainfallCount;
+			dailyRainfallCount = tipCount;
+			getWindDirection(ExtdRange);	// Update direction to reflect recent average in {-90 to 450 deg}
+			
+			obsReportRainfallRate = obsRainfallCount * Bucket_Size * 3600 / reportIntervalSec;   //  mm/hr
+			sensorObs[currentObs].obsReport.windGustX10 = windGust * 10.0;
+			sensorObs[currentObs].obsReport.windGustDir = calGustDirn;
+			sensorObs[currentObs].obsReport.tempX10 = (DSsensors.getTempC(airTempAddr)+ 100.0)* 10.0;
+			sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
+			sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
+			sensorObs[currentObs].obsReport.rainflX10 = obsReportRainfallRate * 10.0;
+			sensorObs[currentObs].obsReport.windspX10 = windSpeed * 10.0;
+			sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
+			sensorObs[currentObs].obsReport.dailyRainX10 = dailyRainfallCount * Bucket_Size * 10.0;
+			sensorObs[currentObs].obsReport.casetempX10 = (DSsensors.getTempC(caseTempAddr)+ 100.0) * 10.0;
+			
+
+        //  Schedule Callback to transmit the report
+		//	os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL/10), do_send);
+		
+			sampleCount = 0;
+			currentObs = 1- currentObs;		//
+			reportObs = 1 - currentObs;   	// switch reporting to last collected observation
+			windGust = 0;					// Gust reading is reset for every reporting period
+		
+			
+		// Check if this report completes a daily cycle
+			utc = now();
+			localTime = auEastern.toLocal(utc, &tcr);
+			if (resetDaily(localTime, EOD_HOUR - 1, EOD_HOUR + 1) ){
+				tipCount = 0;
+				dailyRainfallCount = 0;     // Next report cycle starts daily total from 0mm
+				obsRainfallCount = 0;
+			}
+		}
+			
+		isSampleRequired = false;
+	}
+	
     os_runloop_once();
 }
