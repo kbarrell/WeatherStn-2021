@@ -58,7 +58,7 @@
 //  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀
 
 
-const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
+// // const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
 #include <SPI.h>
 #include <cactus_io_BME280_I2C.h>
 #include <OneWire.h>
@@ -73,7 +73,7 @@ const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
 
 // Sensor-related definitions
 // Set hardware pin assignments & pre-set constants
-#define TX_Pin 4 				   // used to indicate web data tx
+#define TX_Pin 4 				   // used to indicate lora link tx via external LED
 #define ONE_WIRE_BUS_PIN 29 	  //Data bus pin for DS18B20's
 
 #define WindSensor_Pin (18)       //The pin location of the anemometer sensor
@@ -153,11 +153,11 @@ const unsigned TX_INTERVAL = 300 ;		// 5 min reporting cycle
 const int EOD_HOUR = 9;			// Daily totals are reset at 9am (local);
 
 //  Create BME280 object
-    BME280_I2C bme;     // I2C using address 0x77
+BME280_I2C bme;     // I2C using address 0x77
 
-    // Setup a oneWire instance to communicate with OneWire devices
-    OneWire oneWire(ONE_WIRE_BUS_PIN);
-    DallasTemperature DSsensors(&oneWire);    // Pass the OneWire reference to Dallas Temperature lib
+// Setup a oneWire instance to communicate with OneWire devices
+OneWire oneWire(ONE_WIRE_BUS_PIN);
+DallasTemperature DSsensors(&oneWire);    // Pass the OneWire reference to Dallas Temperature lib
 
 // Assign the addresses of the DS18B20 sensors (determined by reading them previously)
 DeviceAddress airTempAddr = { DS18_AIR_ADDR };
@@ -168,8 +168,9 @@ DeviceAddress caseTempAddr = { DS18_CASE_ADDR };
 //  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀▀ ▀ ▀ ▀▀ 
 
 
-uint8_t payloadBuffer[payloadBufferLength];
-static osjob_t doWorkJob;    //static osjob_t sendjob;  (from WthrStn1.0)
+// // uint8_t payloadBuffer[payloadBufferLength];
+static osjob_t doWorkJob;    
+// //static osjob_t sendjob;  (from WthrStn1.0)
 uint32_t doWorkIntervalSeconds = DO_WORK_INTERVAL_SECONDS;  // Change value in platformio.ini
 
 // Note: LoRa module pin mappings are defined in the Board Support Files.
