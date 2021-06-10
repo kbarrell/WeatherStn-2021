@@ -1,0 +1,569 @@
+2020-11-10 21:44:07: [POST] HTTP Request: From: 3.236.79.30 [axios/0.19.2] - Content-Type: application/json;charset=utf-8 - Token Ending: b25df
+2020-11-10 21:44:07: Raw payload: [
+	{
+		"variable": "ttn_payload",
+		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
+		"serie": 45
+	}
+]
+2020-11-10 21:44:07: Result of [LoRaWAN TTN] payload parser: [
+	{
+		"variable": "ttn_payload",
+		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
+		"serie": 45
+	},
+	{
+		"variable": "devicetemp",
+		"value": 27.200000000000004,
+		"serie": 45
+	},
+	{
+		"variable": "field1",
+		"value": 21.7,
+		"serie": 45
+	},
+	{
+		"variable": "field2",
+		"value": 23.299999999999998,
+		"serie": 45
+	},
+	{
+		"variable": "field3",
+		"value": 50.7,
+		"serie": 45
+	},
+	{
+		"variable": "field4",
+		"value": 1002.2,
+		"serie": 45
+	},
+	{
+		"variable": "field5",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field6",
+		"value": 5.7,
+		"serie": 45
+	},
+	{
+		"variable": "field7",
+		"value": 87,
+		"serie": 45
+	},
+	{
+		"variable": "field8",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field9",
+		"value": 131,
+		"serie": 45
+	},
+	{
+		"variable": "decoded_payload",
+		"value": "D9008300D104FB01262700003900B1000000F804",
+		"serie": 45
+	},
+	{
+		"variable": "gtw_id",
+		"value": "eui-58a0cbfffe8018ae",
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "timestamp",
+		"value": 3054255739,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "rssi",
+		"value": -78,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "snr",
+		"value": 7.5,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "frequency",
+		"value": 917.2,
+		"serie": 45
+	},
+	{
+		"variable": "data_rate",
+		"value": "SF7BW125",
+		"serie": 45
+	},
+	{
+		"variable": "coding_rate",
+		"value": "4/5",
+		"serie": 45
+	},
+	{
+		"variable": "latitude",
+		"value": -38.292618,
+		"serie": 45
+	},
+	{
+		"variable": "longitude",
+		"value": 144.99622,
+		"serie": 45
+	},
+	{
+		"variable": "altitude",
+		"value": 105,
+		"serie": 45
+	},
+	{
+		"variable": "location_source",
+		"value": "registry",
+		"serie": 45
+	},
+	{
+		"variable": "dev_id",
+		"value": "weather_station01",
+		"serie": 45
+	},
+	{
+		"variable": "hardware_serial",
+		"value": "006387B26E041955",
+		"serie": 45
+	},
+	{
+		"variable": "port",
+		"value": 1,
+		"serie": 45
+	},
+	{
+		"variable": "counter",
+		"value": 45,
+		"serie": 45
+	}
+]
+2020-11-10 21:44:07: Result of [Custom The Things Network ] payload parser: [
+	{
+		"variable": "ttn_payload",
+		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
+		"serie": 45
+	},
+	{
+		"variable": "devicetemp",
+		"value": 27.200000000000004,
+		"serie": 45
+	},
+	{
+		"variable": "field1",
+		"value": 21.7,
+		"serie": 45
+	},
+	{
+		"variable": "field2",
+		"value": 23.299999999999998,
+		"serie": 45
+	},
+	{
+		"variable": "field3",
+		"value": 50.7,
+		"serie": 45
+	},
+	{
+		"variable": "field4",
+		"value": 1002.2,
+		"serie": 45
+	},
+	{
+		"variable": "field5",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field6",
+		"value": 5.7,
+		"serie": 45
+	},
+	{
+		"variable": "field7",
+		"value": 87,
+		"serie": 45
+	},
+	{
+		"variable": "field8",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field9",
+		"value": 131,
+		"serie": 45
+	},
+	{
+		"variable": "decoded_payload",
+		"value": "D9008300D104FB01262700003900B1000000F804",
+		"serie": 45
+	},
+	{
+		"variable": "gtw_id",
+		"value": "eui-58a0cbfffe8018ae",
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "timestamp",
+		"value": 3054255739,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "rssi",
+		"value": -78,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "snr",
+		"value": 7.5,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "frequency",
+		"value": 917.2,
+		"serie": 45
+	},
+	{
+		"variable": "data_rate",
+		"value": "SF7BW125",
+		"serie": 45
+	},
+	{
+		"variable": "coding_rate",
+		"value": "4/5",
+		"serie": 45
+	},
+	{
+		"variable": "latitude",
+		"value": -38.292618,
+		"serie": 45
+	},
+	{
+		"variable": "longitude",
+		"value": 144.99622,
+		"serie": 45
+	},
+	{
+		"variable": "altitude",
+		"value": 105,
+		"serie": 45
+	},
+	{
+		"variable": "location_source",
+		"value": "registry",
+		"serie": 45
+	},
+	{
+		"variable": "dev_id",
+		"value": "weather_station01",
+		"serie": 45
+	},
+	{
+		"variable": "hardware_serial",
+		"value": "006387B26E041955",
+		"serie": 45
+	},
+	{
+		"variable": "port",
+		"value": 1,
+		"serie": 45
+	},
+	{
+		"variable": "counter",
+		"value": 45,
+		"serie": 45
+	},
+	{
+		"variable": "devicetemp",
+		"value": 27.200000000000004,
+		"serie": 45
+	},
+	{
+		"variable": "field1",
+		"value": 21.7,
+		"serie": 45
+	},
+	{
+		"variable": "field2",
+		"value": 23.299999999999998,
+		"serie": 45
+	},
+	{
+		"variable": "field3",
+		"value": 50.7,
+		"serie": 45
+	},
+	{
+		"variable": "field4",
+		"value": 1002.2,
+		"serie": 45
+	},
+	{
+		"variable": "field5",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field6",
+		"value": 5.7,
+		"serie": 45
+	},
+	{
+		"variable": "field7",
+		"value": 87,
+		"serie": 45
+	},
+	{
+		"variable": "field8",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field9",
+		"value": 131,
+		"serie": 45
+	},
+	{
+		"variable": "decoded_payload",
+		"value": "D9008300D104FB01262700003900B1000000F804",
+		"serie": 45
+	},
+	{
+		"variable": "gtw_id",
+		"value": "eui-58a0cbfffe8018ae",
+		"serie": "3lanu5cs6nf3t7uitps6hd"
+	},
+	{
+		"variable": "timestamp",
+		"value": 3054255739,
+		"serie": "3lanu5cs6nf3t7uitps6hd"
+	},
+	{
+		"variable": "rssi",
+		"value": -78,
+		"serie": "3lanu5cs6nf3t7uitps6hd"
+	},
+	{
+		"variable": "snr",
+		"value": 7.5,
+		"serie": "3lanu5cs6nf3t7uitps6hd"
+	},
+	{
+		"variable": "frequency",
+		"value": 917.2,
+		"serie": 45
+	},
+	{
+		"variable": "data_rate",
+		"value": "SF7BW125",
+		"serie": 45
+	},
+	{
+		"variable": "coding_rate",
+		"value": "4/5",
+		"serie": 45
+	},
+	{
+		"variable": "latitude",
+		"value": -38.292618,
+		"serie": 45
+	},
+	{
+		"variable": "longitude",
+		"value": 144.99622,
+		"serie": 45
+	},
+	{
+		"variable": "altitude",
+		"value": 105,
+		"serie": 45
+	},
+	{
+		"variable": "location_source",
+		"value": "registry",
+		"serie": 45
+	},
+	{
+		"variable": "dev_id",
+		"value": "weather_station01",
+		"serie": 45
+	},
+	{
+		"variable": "hardware_serial",
+		"value": "006387B26E041955",
+		"serie": 45
+	},
+	{
+		"variable": "port",
+		"value": 1,
+		"serie": 45
+	},
+	{
+		"variable": "counter",
+		"value": 45,
+		"serie": 45
+	}
+]
+2020-11-10 21:44:07: Result of [device] payload parser: [
+	{
+		"variable": "devicetemp",
+		"value": 27.200000000000004,
+		"serie": 45
+	},
+	{
+		"variable": "field1",
+		"value": 21.7,
+		"serie": 45
+	},
+	{
+		"variable": "field2",
+		"value": 23.299999999999998,
+		"serie": 45
+	},
+	{
+		"variable": "field3",
+		"value": 50.7,
+		"serie": 45
+	},
+	{
+		"variable": "field4",
+		"value": 1002.2,
+		"serie": 45
+	},
+	{
+		"variable": "field5",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field6",
+		"value": 5.7,
+		"serie": 45
+	},
+	{
+		"variable": "field7",
+		"value": 87,
+		"serie": 45
+	},
+	{
+		"variable": "field8",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field9",
+		"value": 131,
+		"serie": 45
+	},
+	{
+		"variable": "timestamp",
+		"value": 3054255739,
+		"serie": "sel0pqjf75gwfyx249f9xo"
+	},
+	{
+		"variable": "latitude",
+		"value": -38.292618,
+		"serie": 45
+	},
+	{
+		"variable": "longitude",
+		"value": 144.99622,
+		"serie": 45
+	},
+	{
+		"variable": "devicetemp",
+		"value": 27.200000000000004,
+		"serie": 45
+	},
+	{
+		"variable": "field1",
+		"value": 21.7,
+		"serie": 45
+	},
+	{
+		"variable": "field2",
+		"value": 23.299999999999998,
+		"serie": 45
+	},
+	{
+		"variable": "field3",
+		"value": 50.7,
+		"serie": 45
+	},
+	{
+		"variable": "field4",
+		"value": 1002.2,
+		"serie": 45
+	},
+	{
+		"variable": "field5",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field6",
+		"value": 5.7,
+		"serie": 45
+	},
+	{
+		"variable": "field7",
+		"value": 87,
+		"serie": 45
+	},
+	{
+		"variable": "field8",
+		"value": 0,
+		"serie": 45
+	},
+	{
+		"variable": "field9",
+		"value": 131,
+		"serie": 45
+	},
+	{
+		"variable": "timestamp",
+		"value": 3054255739,
+		"serie": "3lanu5cs6nf3t7uitps6hd"
+	},
+	{
+		"variable": "latitude",
+		"value": -38.292618,
+		"serie": 45
+	},
+	{
+		"variable": "longitude",
+		"value": 144.99622,
+		"serie": 45
+	},
+	{
+		"variable": "winddirloc",
+		"value": "E",
+		"location": {
+			"lat": -38.29258605,
+			"lng": 145.0535367
+		}
+	},
+	{
+		"variable": "gtw_location",
+		"value": "GTW",
+		"location": {
+			"lat": -38.292618,
+			"lng": 144.99622
+		}
+	}
+]
+
+2020-11-10 21:44:07: Bucket [14e2]: 28 Data Added
+------
+2020-11-10 21:44:07: [POST] HTTP Request: From: 3.236.79.30 [axios/0.19.2] - Content-Type: application/json;charset=utf-8 - Token Ending: b25df
+2020-11-10 21:44:07: Raw payload: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
+2020-11-10 21:44:07: Result of [LoRaWAN TTN] payload parser: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
+2020-11-10 21:44:07: Result of [Custom The Things Network ] payload parser: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
+2020-11-10 21:44:07: Error on [device] payload parser: {}
+------
