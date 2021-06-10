@@ -1,11 +1,12 @@
 /*******************************************************************************
  *
- *  File:         LMIC-node.h
+ *  File:         WeatherStn-21.h
  * 
- *  Function:     LMIC-node main header file.
+ *  Function:     WeatherStn-21 main header file. Largely untouched from LMIC-node.h
  * 
  *  Copyright:    Copyright (c) 2021 Leonel Lopes Parente
  *                Portions Copyright (c) 2018 Terry Moore, MCCI
+ *                Portions Copyright (c)  2021 Kevin Barrell
  *
  *                Permission is hereby granted, free of charge, to anyone 
  *                obtaining a copy of this document and accompanying files to do, 
@@ -44,7 +45,7 @@ enum class InitType { Hardware, PostInitSerial };
 enum class PrintTarget { All, Serial, Display };
 
 // Forward declarations
-static void doWorkCallback(osjob_t* job);
+static void do_send(osjob_t* job);       // replaces doWorkCallback as more complex scheduling req'd
 void processWork(ostime_t timestamp);
 void processDownlink(ostime_t eventTimestamp, uint8_t fPort, uint8_t* data, uint8_t dataLength);
 void onLmicEvent(void *pUserData, ev_t ev);

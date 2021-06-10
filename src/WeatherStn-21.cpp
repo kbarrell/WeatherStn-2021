@@ -1,13 +1,14 @@
 /*******************************************************************************
  *
- *  File:          LMIC-node.cpp
+ *  File:          WeatherStn-21.cpp
  * 
- *  Function:      LMIC-node main application file.
+ *  Function:      WeatherStn-21 main application file.
  * 
- *  Copyright:     Copyright (c) 2021 Leonel Lopes Parente
+ *  Copyright:     Copyright (c) 2021 Kevin Barrell
+ *                 Copyright (c) 2021 Leonel Lopes Parente
  *                 Copyright (c) 2018 Terry Moore, MCCI
  *                 Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
- *
+ *                 
  *                 Permission is hereby granted, free of charge, to anyone 
  *                 obtaining a copy of this document and accompanying files to do, 
  *                 whatever they want with them without any restriction, including,
@@ -19,17 +20,14 @@
  * 
  *  License:       MIT License. See accompanying LICENSE file.
  * 
- *  Author:        Leonel Lopes Parente
+ *  Author:        Kevin Barrell,  Leonel Lopes Parente
  * 
- *  Description:   To get LMIC-node up and running no changes need to be made
- *                 to any source code. Only configuration is required
- *                 in platform-io.ini and lorawan-keys.h.
+ *  Description:   Migration of initial 2020 version of bespoke arduino Weather Station
+ *                 code  https://github.com/kbarrell/Arduino-WeatherStation to adopt:
  * 
- *                 If you want to modify the code e.g. to add your own sensors,
- *                 that can be done in the two area's that start with
- *                 USER CODE BEGIN and end with USER CODE END. There's no need
- *                 to change code in other locations (unless you have a reason).
- *                 See README.md for documentation and how to use LMIC-node.
+ *                    ::  Latest MCCI arduino-lmic library
+ *                    ::  LMIC-node orchestration of lmic processing 
+ *                    ::  OTA Activation of LoraWAN TTN v3
  * 
  *                 LMIC-node uses the concepts from the original ttn-otaa.ino 
  *                 and ttn-abp.ino examples provided with the LMIC libraries.
@@ -50,15 +48,8 @@
  *
  ******************************************************************************/
 
-#include "LMIC-node.h"
+#include "LMIC-node.h"        //Handling of mulit-board generalised LMIC integration
 
-
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▄ █▀▀ █▀▀ ▀█▀ █▀█
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▄ █▀▀ █ █  █  █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀
-
-
-// // const uint8_t payloadBufferLength = 4;    // Adjust to fit max payload length
 #include <SPI.h>
 #include <cactus_io_BME280_I2C.h>
 #include <OneWire.h>
@@ -163,15 +154,8 @@ DallasTemperature DSsensors(&oneWire);    // Pass the OneWire reference to Dalla
 DeviceAddress airTempAddr = { DS18_AIR_ADDR };
 DeviceAddress caseTempAddr = { DS18_CASE_ADDR };
 
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▀ █▀█ █▀▄
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▀ █ █ █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀▀ ▀ ▀ ▀▀ 
 
-
-// // uint8_t payloadBuffer[payloadBufferLength];
-static osjob_t doWorkJob;    
-// //static osjob_t sendjob;  (from WthrStn1.0)
-uint32_t doWorkIntervalSeconds = DO_WORK_INTERVAL_SECONDS;  // Change value in platformio.ini
+static osjob_t sendjob;    
 
 // Note: LoRa module pin mappings are defined in the Board Support Files.
 
@@ -475,9 +459,7 @@ void printHeader(void)
             serial.print(F("LMIC debug:    "));  
             serial.println(LMIC_DEBUG_LEVEL);
         #endif
-        serial.print(F("Interval:      "));
-        serial.print(doWorkIntervalSeconds);
-        serial.println(F(" seconds"));
+
         if (activationMode == ActivationMode::OTAA)
         {
             serial.println();
@@ -681,8 +663,8 @@ void onEvent(ev_t ev)
             // Cancel the next scheduled doWork job and re-schedule
             // for immediate execution to prevent that any uplink will
             // have to wait until the current doWork interval ends.
-            os_clearCallback(&doWorkJob);
-            os_setCallback(&doWorkJob, doWorkCallback);
+            os_clearCallback(&sendjob);
+            os_setCallback(&sendjob, do_send);
             break;
 
         case EV_TXCOMPLETE:
@@ -732,41 +714,6 @@ void onEvent(ev_t ev)
     }
 }
 
-void do_send(osjob_t* j){
-
-    // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND) {
-        Serial.println(F("OP_TXRXPEND, not sending"));
-    } else {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, sensorObs[reportObs].readAccess, sizeof(obsSet), 0);     // Use the last completed set of obs
-        Serial.println(F("Packet queued"));
-        Serial.print(F("Sending packet on frequency: "));
-        Serial.println(LMIC.freq);
-    }
-    // Next TX is scheduled after TX_COMPLETE event.
-}
-
-static void doWorkCallback(osjob_t* job)
-{
-    // Event hander for doWorkJob. Gets called by the LMIC scheduler.
-    // The actual work is performed in function processWork() which is called below.
-
-    ostime_t timestamp = os_getTime();
-    #ifdef USE_SERIAL
-        serial.println();
-        printEvent(timestamp, "doWork job started", PrintTarget::Serial);
-    #endif    
-
-    // Do the work that needs to be performed.
-    processWork(timestamp);
-
-    // This job must explicitly reschedule itself for the next run.
-    ostime_t startAt = timestamp + sec2osticks((int64_t)doWorkIntervalSeconds);
-    os_setTimedCallback(&doWorkJob, startAt, doWorkCallback);    
-}
-
-
 lmic_tx_error_t scheduleUplink(uint8_t fPort, uint8_t* data, uint8_t dataLength, bool confirmed = false)
 {
     // This function is called from the processWork() function to schedule
@@ -807,18 +754,35 @@ lmic_tx_error_t scheduleUplink(uint8_t fPort, uint8_t* data, uint8_t dataLength,
     return retval;    
 }
 
+static void do_send(osjob_t* j){
 
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▄ █▀▀ █▀▀ ▀█▀ █▀█
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▄ █▀▀ █ █  █  █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀
+    ostime_t timestamp = os_getTime();
+    // Check if there is not a current TX/RX job running
+    if (LMIC.opmode & OP_TXRXPEND)
+    {
+        // TxRx is currently pending, do not send.
+        #ifdef USE_SERIAL
+            printEvent(timestamp, "Uplink not scheduled because TxRx pending", PrintTarget::Serial);
+        #endif    
+        #ifdef USE_DISPLAY
+            printEvent(timestamp, "UL not scheduled", PrintTarget::Display);
+        #endif
+    }
+     else 
+    {
+        // Prepare upstream data transmission at the next possible time.
+        scheduleUplink(1, sensorObs[reportObs].readAccess, sizeof(obsSet), 0);     // Use the last completed set of obs
+    }
+    // Next TX is scheduled after TX_COMPLETE event.
+}
 
-
+//  Left-over from LMIC-node where "counter" used as proxy sensor data
 static volatile uint16_t counter_ = 0;
 
 uint16_t getCounterValue()
 {
     // Increments counter and returns the new value.
-    delay(50);         // Fake this takes some time
+    //delay(50);         // Fake this takes some time
     return ++counter_;
 }
 
@@ -826,100 +790,6 @@ void resetCounter()
 {
     // Reset counter to 0
     counter_ = 0;
-}
-
-
-void processWork(ostime_t doWorkJobTimeStamp)
-{
-    // This function is called from the doWorkCallback() 
-    // callback function when the doWork job is executed.
-
-    // Uses globals: payloadBuffer and LMIC data structure.
-
-    // This is where the main work is performed like
-    // reading sensor and GPS data and schedule uplink
-    // messages if anything needs to be transmitted.
-
-    // Skip processWork if using OTAA and still joining.
-    if (LMIC.devaddr != 0)
-    {
-        // Collect input data.
-        // For simplicity LMIC-node uses a counter to simulate a sensor. 
-        // The counter is increased automatically by getCounterValue()
-        // and can be reset with a 'reset counter' command downlink message.
-
-        uint16_t counterValue = getCounterValue();
-        ostime_t timestamp = os_getTime();
-
-        #ifdef USE_DISPLAY
-            // Interval and Counter values are combined on a single row.
-            // This allows to keep the 3rd row empty which makes the
-            // information better readable on the small display.
-            display.clearLine(INTERVAL_ROW);
-            display.setCursor(COL_0, INTERVAL_ROW);
-            display.print("I:");
-            display.print(doWorkIntervalSeconds);
-            display.print("s");        
-            display.print(" Ctr:");
-            display.print(counterValue);
-        #endif
-        #ifdef USE_SERIAL
-            printEvent(timestamp, "Input data collected", PrintTarget::Serial);
-            printSpaces(serial, MESSAGE_INDENT);
-            serial.print(F("COUNTER value: "));
-            serial.println(counterValue);
-        #endif    
-
-        // For simplicity LMIC-node will try to send an uplink
-        // message every time processWork() is executed.
-
-        // Schedule uplink message if possible
-        if (LMIC.opmode & OP_TXRXPEND)
-        {
-            // TxRx is currently pending, do not send.
-            #ifdef USE_SERIAL
-                printEvent(timestamp, "Uplink not scheduled because TxRx pending", PrintTarget::Serial);
-            #endif    
-            #ifdef USE_DISPLAY
-                printEvent(timestamp, "UL not scheduled", PrintTarget::Display);
-            #endif
-        }
-        else
-        {
-            // Prepare uplink payload.
-            uint8_t fPort = 10;
-            payloadBuffer[0] = counterValue >> 8;
-            payloadBuffer[1] = counterValue & 0xFF;
-            uint8_t payloadLength = 2;
-
-            scheduleUplink(fPort, payloadBuffer, payloadLength);
-        }
-    }
-}    
- 
-
-void processDownlink(ostime_t txCompleteTimestamp, uint8_t fPort, uint8_t* data, uint8_t dataLength)
-{
-    // This function is called from the onEvent() event handler
-    // on EV_TXCOMPLETE when a downlink message was received.
-
-    // Implements a 'reset counter' command that can be sent via a downlink message.
-    // To send the reset counter command to the node, send a downlink message
-    // (e.g. from the TTN Console) with single byte value resetCmd on port cmdPort.
-
-    const uint8_t cmdPort = 100;
-    const uint8_t resetCmd= 0xC0;
-
-    if (fPort == cmdPort && dataLength == 1 && data[0] == resetCmd)
-    {
-        #ifdef USE_SERIAL
-            printSpaces(serial, MESSAGE_INDENT);
-            serial.println(F("Reset cmd received"));
-        #endif
-        ostime_t timestamp = os_getTime();
-        resetCounter();
-        printEvent(timestamp, "Counter reset", PrintTarget::All, false);
-    }          
 }
 
 // Interrupt handler routine for timer interrupt
@@ -940,10 +810,10 @@ void isr_timer() {
 // Interrupt handler routine to increment the rotation count for wind speed
 void isr_rotation ()   {
 
-  if ((millis() - contactBounceTime) > BounceInterval ) {  // debounce the switch contact.
-    rotations++;
-    contactBounceTime = millis();
-  }
+    if ((millis() - contactBounceTime) > BounceInterval ) {  // debounce the switch contact.
+        rotations++;
+        contactBounceTime = millis();
+    }
 }
 
 // Interrrupt handler routine that is triggered when the rg-11 detects rain   
@@ -1045,10 +915,106 @@ void printIt(uint8_t *charArray, int length) {
 	Serial.println("===EndOfBuffer========");
 }
 
+void processWork(ostime_t doWorkJobTimeStamp)
+{
+    // This is where the main work is performed like
+    // reading sensor and GPS data and schedule uplink
+    // messages if anything needs to be transmitted.
 
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▀ █▀█ █▀▄
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▀ █ █ █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀▀ ▀ ▀ ▀▀ 
+    // Skip processWork if using OTAA and still joining.
+    if (LMIC.devaddr != 0)
+    {
+        // Collect input data.  All sensorObs content is WeatherStation related
+        // For simplicity LMIC-node used a counter to simulate a sensor. 
+        // The counter is increased automatically by getCounterValue()
+        // and can be reset with a 'reset counter' command downlink message.
+        // This is currently retained for convenience
+
+        uint16_t counterValue = getCounterValue();
+        ostime_t timestamp = os_getTime();
+
+        obsRainfallCount = tipCount - dailyRainfallCount;
+		dailyRainfallCount = tipCount;
+		getWindDirection(ExtdRange);	// Update direction to reflect recent average in {-90 to 450 deg}
+
+		obsReportRainfallRate = obsRainfallCount * Bucket_Size * 3600 / reportIntervalSec;   //  mm/hr
+		sensorObs[currentObs].obsReport.windGustX10 = windGust * 10.0;
+		sensorObs[currentObs].obsReport.windGustDir = calGustDirn;
+		sensorObs[currentObs].obsReport.tempX10 = (DSsensors.getTempC(airTempAddr)+ 100.0)* 10.0;
+		sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
+		sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
+		sensorObs[currentObs].obsReport.rainflX10 = obsReportRainfallRate * 10.0;
+		sensorObs[currentObs].obsReport.windspX10 = windSpeed * 10.0;
+		sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
+		sensorObs[currentObs].obsReport.dailyRainX10 = dailyRainfallCount * Bucket_Size * 10.0;
+		sensorObs[currentObs].obsReport.casetempX10 = (DSsensors.getTempC(caseTempAddr)+ 100.0) * 10.0;
+			
+
+        #ifdef USE_DISPLAY
+            // Interval and Counter values are combined on a single row.
+            // This allows to keep the 3rd row empty which makes the
+            // information better readable on the small display.
+            display.clearLine(INTERVAL_ROW);
+            display.setCursor(COL_0, INTERVAL_ROW);
+            display.print("I:");
+            display.print(doWorkIntervalSeconds);
+            display.print("s");        
+            display.print(" Ctr:");
+            display.print(counterValue);
+        #endif
+        #ifdef USE_SERIAL
+            printEvent(timestamp, "Input data collected", PrintTarget::Serial);
+            printSpaces(serial, MESSAGE_INDENT);
+            serial.print(F("COUNTER value: "));
+            serial.println(counterValue);
+        #endif    
+
+        // For simplicity LMIC-node will try to send an uplink
+        // message every time processWork() is executed.
+
+        // Schedule uplink message if possible
+        if (LMIC.opmode & OP_TXRXPEND)
+        {
+            // TxRx is currently pending, do not send.
+            #ifdef USE_SERIAL
+                printEvent(timestamp, "Uplink not scheduled because TxRx pending", PrintTarget::Serial);
+            #endif    
+            #ifdef USE_DISPLAY
+                printEvent(timestamp, "UL not scheduled", PrintTarget::Display);
+            #endif
+        }
+        else
+        {
+            // Prepare uplink payload.
+            os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL/10), do_send);
+        }
+    }
+}    
+ 
+
+void processDownlink(ostime_t txCompleteTimestamp, uint8_t fPort, uint8_t* data, uint8_t dataLength)
+{
+    // This function is called from the onEvent() event handler
+    // on EV_TXCOMPLETE when a downlink message was received.
+
+    // Implements a 'reset counter' command that can be sent via a downlink message.
+    // To send the reset counter command to the node, send a downlink message
+    // (e.g. from the TTN Console) with single byte value resetCmd on port cmdPort.
+
+    const uint8_t cmdPort = 100;
+    const uint8_t resetCmd= 0xC0;
+
+    if (fPort == cmdPort && dataLength == 1 && data[0] == resetCmd)
+    {
+        #ifdef USE_SERIAL
+            printSpaces(serial, MESSAGE_INDENT);
+            serial.println(F("Reset cmd received"));
+        #endif
+        ostime_t timestamp = os_getTime();
+        resetCounter();
+        printEvent(timestamp, "Counter reset", PrintTarget::All, false);
+    }          
+}
 
 
 void setup() 
@@ -1084,18 +1050,10 @@ void setup()
         abort();
     }
 
-    initLmic();
-
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▄ █▀▀ █▀▀ ▀█▀ █▀█
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▄ █▀▀ █ █  █  █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀
-
-    // Place code for initializing sensors etc. here.
-    
+    initLmic();  
 
     setSyncProvider(RTC.get);
     setSyncInterval(500);     // resync system time to RTC every 500 sec
-
 
     // prepare obsPayload selection indices
     currentObs = 0;
@@ -1149,17 +1107,13 @@ void setup()
 
     resetCounter();
 
-//  █ █ █▀▀ █▀▀ █▀▄   █▀▀ █▀█ █▀▄ █▀▀   █▀▀ █▀█ █▀▄
-//  █ █ ▀▀█ █▀▀ █▀▄   █   █ █ █ █ █▀▀   █▀▀ █ █ █ █
-//  ▀▀▀ ▀▀▀ ▀▀▀ ▀ ▀   ▀▀▀ ▀▀▀ ▀▀  ▀▀▀   ▀▀▀ ▀ ▀ ▀▀ 
-
     if (activationMode == ActivationMode::OTAA)
     {
         LMIC_startJoining();
     }
 
     // Schedule initial doWork job for immediate execution.
-    os_setCallback(&doWorkJob, doWorkCallback);
+    os_setCallback(&sendjob, do_send);
     	
 	sei();   // Enable Interrupts
 	
@@ -1168,6 +1122,8 @@ void setup()
 
 void loop() 
 {
+    ostime_t timestamp;
+
     if(isSampleRequired) {
 		sampleCount++;
 		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
@@ -1183,26 +1139,10 @@ void loop()
 
 	//  Does this sample complete a reporting cycle?   If so, prepare payload.
 		if (sampleCount == Report_Interval) {
-			obsRainfallCount = tipCount - dailyRainfallCount;
-			dailyRainfallCount = tipCount;
-			getWindDirection(ExtdRange);	// Update direction to reflect recent average in {-90 to 450 deg}
-			
-			obsReportRainfallRate = obsRainfallCount * Bucket_Size * 3600 / reportIntervalSec;   //  mm/hr
-			sensorObs[currentObs].obsReport.windGustX10 = windGust * 10.0;
-			sensorObs[currentObs].obsReport.windGustDir = calGustDirn;
-			sensorObs[currentObs].obsReport.tempX10 = (DSsensors.getTempC(airTempAddr)+ 100.0)* 10.0;
-			sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
-			sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
-			sensorObs[currentObs].obsReport.rainflX10 = obsReportRainfallRate * 10.0;
-			sensorObs[currentObs].obsReport.windspX10 = windSpeed * 10.0;
-			sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
-			sensorObs[currentObs].obsReport.dailyRainX10 = dailyRainfallCount * Bucket_Size * 10.0;
-			sensorObs[currentObs].obsReport.casetempX10 = (DSsensors.getTempC(caseTempAddr)+ 100.0) * 10.0;
-			
+            timestamp = os_getTime();
 
-        //  Schedule Callback to transmit the report
-		//	os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL/10), do_send);
-		
+			processWork(timestamp);
+
 			sampleCount = 0;
 			currentObs = 1- currentObs;		//
 			reportObs = 1 - currentObs;   	// switch reporting to last collected observation
