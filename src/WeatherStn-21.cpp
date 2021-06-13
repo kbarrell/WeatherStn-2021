@@ -245,6 +245,10 @@ void printEvent(ostime_t timestamp,
                 bool clearDisplayStatusRow = true,
                 bool eventLabel = false)
 {
+    int hour_now = hour();
+    int minute_now = minute();
+    int second_now = second();
+
     #ifdef USE_DISPLAY 
         if (target == PrintTarget::All || target == PrintTarget::Display)
         {
@@ -272,6 +276,8 @@ void printEvent(ostime_t timestamp,
 
         if (target == PrintTarget::All || target == PrintTarget::Serial)
         {
+            serial.print(hour_now); serial.print(":"); serial.print(minute_now); serial.print(":");
+            serial.print(second_now); serial.print("::\t");
             printChars(serial, '0', zerosCount);
             serial.print(timeString);
             serial.print(":  ");
