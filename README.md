@@ -2,7 +2,7 @@
 
 This repository holds the migration of my earlier Arduino weather station implementation https://github.com/kbarrell/Arduino-WeatherStation.  The redevelopment was prompted by several factors:
 
-- Desire to adopt a more current version of **MCCI LMIC library** (v3.3.0) as the original implementation had followed an available but early snapshot of that library and its invocation
+- Desire to adopt a more current version of **MCCI LMIC library** (v3.3.0) as the original implementation had followed an available, but early, snapshot of that library and its invocation
 - Desire to move form Arduino IDE to a more functional development environment (**VSC**) and associated multi-board build platform **PlatformIO**.
 - Need to migrate the networking environment from **TTN**, The Things Network v2, to its replacement, **The Things Stack - Community Edition**, prior to the retirement of v2 operation.
 - Desire to move to the TTN-preferred Over-The-Air Activation **OTAA** of the weather station node, in place of the static Activation By Personalisation **ABP**
@@ -15,3 +15,4 @@ To ease the challenge of the LMIC library migration and to adopt a more structur
 - A new Board Support File for an atmMega2560 arduino processor + Dragino Lora Shield was produced for the LMIC-node environment, to support the hardware platform inherited from the original Weather Station implementation.
 - While the multi-board environment of LMIC-node offered the opportunity to re-build WeatherStn-2021 for more capable hardware, e.g. Adafruit Feather M0 Lora, the original WeatherStn design relies on TimerOne library as a fundamental interrupt scheduler.  The lack of a readily available TimerOne library for the atmelSAM environment of the Feather M0 became a roadblock, and that development path was suspended.
 
+Note:  Please refer to the above-referenced repositories of the two major code components for details of their capabilities and use.
