@@ -10,6 +10,7 @@ function decodeUplink(input) {
   data.winddirn = ((input.bytes[15] << 8) | input.bytes[14]) - 90.0;
   data.dailyraintl = ((input.bytes[17] << 8) | input.bytes[16])/10.0;
   data.casetemp = ((input.bytes[19] << 8) | input.bytes[18])/10.0 - 100.0;
+  data.humidity2 = ((input.bytes[21] << 8) | input.bytes[20])/10.0;
   data.field1 = data.windgust;
   data.field2 = data.temp;
   data.field3 = data.humidity;

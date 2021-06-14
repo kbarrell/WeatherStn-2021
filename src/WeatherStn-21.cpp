@@ -28,6 +28,7 @@
  *                    ::  Latest MCCI arduino-lmic library
  *                    ::  LMIC-node orchestration of lmic processing 
  *                    ::  OTA Activation of LoraWAN TTN v3
+ *                    ::  Introduction of replacement humidity sensor SHT-31D
  * 
  *                 LMIC-node uses the concepts from the original ttn-otaa.ino 
  *                 and ttn-abp.ino examples provided with the LMIC libraries.
@@ -46,7 +47,6 @@
  *                 U8g2                       https://github.com/olikraus/u8g2
  *                 EasyLed                    https://github.com/lnlp/EasyLed
  *
- *   TEST COMMENT
  * 
  ******************************************************************************/
 
@@ -56,6 +56,7 @@
 #include <cactus_io_BME280_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Adafruit_SHT31.h>
 
 #include "TimerOne.h"     // Timer Interrupt set to 2.5 sec for read sensors
 #include <math.h>
@@ -76,6 +77,8 @@
 #define RG11_Pin  19        		 // Interrupt pin for rain sensor
 #define BounceInterval  15		// Number of ms to allow for debouncing
 #define SampleInt_Pin   3		// Interrupt pin for RTC-generated sampling clock (when used)
+#define SHT31_Addr 0x44         //  Humidity sensor primary I2C address
+#define HighHumidityLevel 950   //  95% Reltive humidity
 
 // Set timer related settings for sensor sampling & calculation
 #define Timing_Clock  500000    //  0.5sec in millis
@@ -111,6 +114,7 @@ typedef struct obsSet {
 	uint16_t	windDir;	// observed wind direction (compass degrees)  range 0->359
 	uint16_t	dailyRainX10; //  accumulated rainfall (mm) X10 for period to 9am daily
 	uint16_t	casetempX10;		// station case temperature (for alarming)
+    uint16_t    humid2X10;  // observed relative humidity (%) x 10 from additional sensor
  } obsSet;
 		
 union obsPayload
@@ -139,14 +143,17 @@ const int count = 4;				// average the last 4 wind directions
 int boxcar[count];					// stack of wind direction values for averaging calculation
 const bool BaseRange = true;
 const bool ExtdRange = false;
+bool enableHeater = false;        // SHT31 sensor heater
+bool highHumidity = false;        // flags a high humidity (>95%) condition
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
 const unsigned TX_INTERVAL = 300 ;		// 5 min reporting cycle
 const int EOD_HOUR = 9;			// Daily totals are reset at 9am (local);
 
-//  Create BME280 object
+//  Create temp & humidity sensor objects
 BME280_I2C bme;     // I2C using address 0x77
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
 
 // Setup a oneWire instance to communicate with OneWire devices
 OneWire oneWire(ONE_WIRE_BUS_PIN);
@@ -155,6 +162,7 @@ DallasTemperature DSsensors(&oneWire);    // Pass the OneWire reference to Dalla
 // Assign the addresses of the DS18B20 sensors (determined by reading them previously)
 DeviceAddress airTempAddr = { DS18_AIR_ADDR };
 DeviceAddress caseTempAddr = { DS18_CASE_ADDR };
+
 
 
 static osjob_t sendjob;    
@@ -956,7 +964,9 @@ void processWork(ostime_t doWorkJobTimeStamp)
 		sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
 		sensorObs[currentObs].obsReport.dailyRainX10 = dailyRainfallCount * Bucket_Size * 10.0;
 		sensorObs[currentObs].obsReport.casetempX10 = (DSsensors.getTempC(caseTempAddr)+ 100.0) * 10.0;
-			
+        sensorObs[currentObs].obsReport.humid2X10 = sht31.readHumidity()*10.0;   // 2nd humidity sensor
+
+        highHumidity = (sensorObs[currentObs].obsReport.humid2X10 > HighHumidityLevel);   // High RH% -> condensation danger
 
         #ifdef USE_DISPLAY
             // Interval and Counter values are combined on a single row.
@@ -1093,7 +1103,15 @@ void setup()
      while (1);
 	}
 
-	
+	if (! sht31.begin(SHT31_Addr)) {   // Set to 0x45 for alternate i2c addr
+    Serial.println("Couldn't find SHT31");
+    while (1) delay(1);
+    }
+    if ( enableHeater || sht31.isHeaterEnabled() ) {
+        enableHeater = false;
+        sht31.heater(enableHeater);     // Setup with heater off initially
+    }
+
     // Setup pins & interrupts	
 	pinMode(TX_Pin, OUTPUT);
 	pinMode(WindSensor_Pin, INPUT);
@@ -1136,6 +1154,12 @@ void loop()
 		sampleCount++;
 		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
 		bme.readSensor();					// Read humidity & barometric pressure
+
+        if (enableHeater && (sampleCount > Report_Interval/2) ) {    
+            enableHeater = false;           //Turn off heater for 2nd half of interval to
+            sht31.heater(enableHeater);     //    avoid measurement bias
+        }
+
 	
 		getWindDirection(BaseRange);			//  Read dirn in range 0 - 360 deg.
 		
@@ -1150,6 +1174,11 @@ void loop()
             timestamp = os_getTime();
 
 			processWork(timestamp);
+
+            if (highHumidity) {             //  Turn on heater for start of new report interval
+                enableHeater = true;
+                sht31.heater(enableHeater);
+            }
 
 			sampleCount = 0;
 			currentObs = 1- currentObs;		//
