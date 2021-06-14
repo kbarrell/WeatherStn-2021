@@ -1,0 +1,25 @@
+#######################################
+# Syntax Coloring Map For SD2405RTC
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+get KEYWORD2
+set KEYWORD2
+read KEYWORD2
+write KEYWORD2
+readAlarm KEYWORD2
+writeAlarm KEYWORD2
+readRegisters KEYWORD2
+#######################################
+# Instances (KEYWORD2)
+#######################################
+RTC
+#######################################
+# Constants (LITERAL1)
+#######################################

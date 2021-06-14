@@ -1,569 +1,260 @@
-2020-11-10 21:44:07: [POST] HTTP Request: From: 3.236.79.30 [axios/0.19.2] - Content-Type: application/json;charset=utf-8 - Token Ending: b25df
-2020-11-10 21:44:07: Raw payload: [
-	{
-		"variable": "ttn_payload",
-		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
-		"serie": 45
-	}
-]
-2020-11-10 21:44:07: Result of [LoRaWAN TTN] payload parser: [
-	{
-		"variable": "ttn_payload",
-		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
-		"serie": 45
-	},
-	{
-		"variable": "devicetemp",
-		"value": 27.200000000000004,
-		"serie": 45
-	},
-	{
-		"variable": "field1",
-		"value": 21.7,
-		"serie": 45
-	},
-	{
-		"variable": "field2",
-		"value": 23.299999999999998,
-		"serie": 45
-	},
-	{
-		"variable": "field3",
-		"value": 50.7,
-		"serie": 45
-	},
-	{
-		"variable": "field4",
-		"value": 1002.2,
-		"serie": 45
-	},
-	{
-		"variable": "field5",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field6",
-		"value": 5.7,
-		"serie": 45
-	},
-	{
-		"variable": "field7",
-		"value": 87,
-		"serie": 45
-	},
-	{
-		"variable": "field8",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field9",
-		"value": 131,
-		"serie": 45
-	},
-	{
-		"variable": "decoded_payload",
-		"value": "D9008300D104FB01262700003900B1000000F804",
-		"serie": 45
-	},
-	{
-		"variable": "gtw_id",
-		"value": "eui-58a0cbfffe8018ae",
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "timestamp",
-		"value": 3054255739,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "rssi",
-		"value": -78,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "snr",
-		"value": 7.5,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "frequency",
-		"value": 917.2,
-		"serie": 45
-	},
-	{
-		"variable": "data_rate",
-		"value": "SF7BW125",
-		"serie": 45
-	},
-	{
-		"variable": "coding_rate",
-		"value": "4/5",
-		"serie": 45
-	},
-	{
-		"variable": "latitude",
-		"value": -38.292618,
-		"serie": 45
-	},
-	{
-		"variable": "longitude",
-		"value": 144.99622,
-		"serie": 45
-	},
-	{
-		"variable": "altitude",
-		"value": 105,
-		"serie": 45
-	},
-	{
-		"variable": "location_source",
-		"value": "registry",
-		"serie": 45
-	},
-	{
-		"variable": "dev_id",
-		"value": "weather_station01",
-		"serie": 45
-	},
-	{
-		"variable": "hardware_serial",
-		"value": "006387B26E041955",
-		"serie": 45
-	},
-	{
-		"variable": "port",
-		"value": 1,
-		"serie": 45
-	},
-	{
-		"variable": "counter",
-		"value": 45,
-		"serie": 45
-	}
-]
-2020-11-10 21:44:07: Result of [Custom The Things Network ] payload parser: [
-	{
-		"variable": "ttn_payload",
-		"value": "{\"app_id\":\"winston_weather\",\"dev_id\":\"weather_station01\",\"hardware_serial\":\"006387B26E041955\",\"port\":1,\"counter\":45,\"payload_raw\":\"D9008300D104FB01262700003900B1000000F804\",\"payload_fields\":{\"devicetemp\":27.200000000000003,\"field1\":21.7,\"field2\":23.299999999999997,\"field3\":50.7,\"field4\":1002.2,\"field5\":0,\"field6\":5.7,\"field7\":87,\"field8\":0,\"field9\":131},\"metadata\":{\"time\":\"2020-11-10T10:44:06.731419549Z\",\"frequency\":917.2,\"modulation\":\"LORA\",\"data_rate\":\"SF7BW125\",\"coding_rate\":\"4/5\",\"gateways\":[{\"gtw_id\":\"eui-58a0cbfffe8018ae\",\"timestamp\":3054255739,\"time\":\"2020-11-10T10:44:07.083872079Z\",\"channel\":0,\"rssi\":-78,\"snr\":7.5,\"rf_chain\":0}],\"latitude\":-38.292618,\"longitude\":144.99622,\"altitude\":105,\"location_source\":\"registry\"}}",
-		"serie": 45
-	},
-	{
-		"variable": "devicetemp",
-		"value": 27.200000000000004,
-		"serie": 45
-	},
-	{
-		"variable": "field1",
-		"value": 21.7,
-		"serie": 45
-	},
-	{
-		"variable": "field2",
-		"value": 23.299999999999998,
-		"serie": 45
-	},
-	{
-		"variable": "field3",
-		"value": 50.7,
-		"serie": 45
-	},
-	{
-		"variable": "field4",
-		"value": 1002.2,
-		"serie": 45
-	},
-	{
-		"variable": "field5",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field6",
-		"value": 5.7,
-		"serie": 45
-	},
-	{
-		"variable": "field7",
-		"value": 87,
-		"serie": 45
-	},
-	{
-		"variable": "field8",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field9",
-		"value": 131,
-		"serie": 45
-	},
-	{
-		"variable": "decoded_payload",
-		"value": "D9008300D104FB01262700003900B1000000F804",
-		"serie": 45
-	},
-	{
-		"variable": "gtw_id",
-		"value": "eui-58a0cbfffe8018ae",
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "timestamp",
-		"value": 3054255739,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "rssi",
-		"value": -78,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "snr",
-		"value": 7.5,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "frequency",
-		"value": 917.2,
-		"serie": 45
-	},
-	{
-		"variable": "data_rate",
-		"value": "SF7BW125",
-		"serie": 45
-	},
-	{
-		"variable": "coding_rate",
-		"value": "4/5",
-		"serie": 45
-	},
-	{
-		"variable": "latitude",
-		"value": -38.292618,
-		"serie": 45
-	},
-	{
-		"variable": "longitude",
-		"value": 144.99622,
-		"serie": 45
-	},
-	{
-		"variable": "altitude",
-		"value": 105,
-		"serie": 45
-	},
-	{
-		"variable": "location_source",
-		"value": "registry",
-		"serie": 45
-	},
-	{
-		"variable": "dev_id",
-		"value": "weather_station01",
-		"serie": 45
-	},
-	{
-		"variable": "hardware_serial",
-		"value": "006387B26E041955",
-		"serie": 45
-	},
-	{
-		"variable": "port",
-		"value": 1,
-		"serie": 45
-	},
-	{
-		"variable": "counter",
-		"value": 45,
-		"serie": 45
-	},
-	{
-		"variable": "devicetemp",
-		"value": 27.200000000000004,
-		"serie": 45
-	},
-	{
-		"variable": "field1",
-		"value": 21.7,
-		"serie": 45
-	},
-	{
-		"variable": "field2",
-		"value": 23.299999999999998,
-		"serie": 45
-	},
-	{
-		"variable": "field3",
-		"value": 50.7,
-		"serie": 45
-	},
-	{
-		"variable": "field4",
-		"value": 1002.2,
-		"serie": 45
-	},
-	{
-		"variable": "field5",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field6",
-		"value": 5.7,
-		"serie": 45
-	},
-	{
-		"variable": "field7",
-		"value": 87,
-		"serie": 45
-	},
-	{
-		"variable": "field8",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field9",
-		"value": 131,
-		"serie": 45
-	},
-	{
-		"variable": "decoded_payload",
-		"value": "D9008300D104FB01262700003900B1000000F804",
-		"serie": 45
-	},
-	{
-		"variable": "gtw_id",
-		"value": "eui-58a0cbfffe8018ae",
-		"serie": "3lanu5cs6nf3t7uitps6hd"
-	},
-	{
-		"variable": "timestamp",
-		"value": 3054255739,
-		"serie": "3lanu5cs6nf3t7uitps6hd"
-	},
-	{
-		"variable": "rssi",
-		"value": -78,
-		"serie": "3lanu5cs6nf3t7uitps6hd"
-	},
-	{
-		"variable": "snr",
-		"value": 7.5,
-		"serie": "3lanu5cs6nf3t7uitps6hd"
-	},
-	{
-		"variable": "frequency",
-		"value": 917.2,
-		"serie": 45
-	},
-	{
-		"variable": "data_rate",
-		"value": "SF7BW125",
-		"serie": 45
-	},
-	{
-		"variable": "coding_rate",
-		"value": "4/5",
-		"serie": 45
-	},
-	{
-		"variable": "latitude",
-		"value": -38.292618,
-		"serie": 45
-	},
-	{
-		"variable": "longitude",
-		"value": 144.99622,
-		"serie": 45
-	},
-	{
-		"variable": "altitude",
-		"value": 105,
-		"serie": 45
-	},
-	{
-		"variable": "location_source",
-		"value": "registry",
-		"serie": 45
-	},
-	{
-		"variable": "dev_id",
-		"value": "weather_station01",
-		"serie": 45
-	},
-	{
-		"variable": "hardware_serial",
-		"value": "006387B26E041955",
-		"serie": 45
-	},
-	{
-		"variable": "port",
-		"value": 1,
-		"serie": 45
-	},
-	{
-		"variable": "counter",
-		"value": 45,
-		"serie": 45
-	}
-]
-2020-11-10 21:44:07: Result of [device] payload parser: [
-	{
-		"variable": "devicetemp",
-		"value": 27.200000000000004,
-		"serie": 45
-	},
-	{
-		"variable": "field1",
-		"value": 21.7,
-		"serie": 45
-	},
-	{
-		"variable": "field2",
-		"value": 23.299999999999998,
-		"serie": 45
-	},
-	{
-		"variable": "field3",
-		"value": 50.7,
-		"serie": 45
-	},
-	{
-		"variable": "field4",
-		"value": 1002.2,
-		"serie": 45
-	},
-	{
-		"variable": "field5",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field6",
-		"value": 5.7,
-		"serie": 45
-	},
-	{
-		"variable": "field7",
-		"value": 87,
-		"serie": 45
-	},
-	{
-		"variable": "field8",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field9",
-		"value": 131,
-		"serie": 45
-	},
-	{
-		"variable": "timestamp",
-		"value": 3054255739,
-		"serie": "sel0pqjf75gwfyx249f9xo"
-	},
-	{
-		"variable": "latitude",
-		"value": -38.292618,
-		"serie": 45
-	},
-	{
-		"variable": "longitude",
-		"value": 144.99622,
-		"serie": 45
-	},
-	{
-		"variable": "devicetemp",
-		"value": 27.200000000000004,
-		"serie": 45
-	},
-	{
-		"variable": "field1",
-		"value": 21.7,
-		"serie": 45
-	},
-	{
-		"variable": "field2",
-		"value": 23.299999999999998,
-		"serie": 45
-	},
-	{
-		"variable": "field3",
-		"value": 50.7,
-		"serie": 45
-	},
-	{
-		"variable": "field4",
-		"value": 1002.2,
-		"serie": 45
-	},
-	{
-		"variable": "field5",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field6",
-		"value": 5.7,
-		"serie": 45
-	},
-	{
-		"variable": "field7",
-		"value": 87,
-		"serie": 45
-	},
-	{
-		"variable": "field8",
-		"value": 0,
-		"serie": 45
-	},
-	{
-		"variable": "field9",
-		"value": 131,
-		"serie": 45
-	},
-	{
-		"variable": "timestamp",
-		"value": 3054255739,
-		"serie": "3lanu5cs6nf3t7uitps6hd"
-	},
-	{
-		"variable": "latitude",
-		"value": -38.292618,
-		"serie": 45
-	},
-	{
-		"variable": "longitude",
-		"value": 144.99622,
-		"serie": 45
-	},
-	{
-		"variable": "winddirloc",
-		"value": "E",
-		"location": {
-			"lat": -38.29258605,
-			"lng": 145.0535367
+2021-06-13 17: 31: 23: [POST
+	] HTTP Request: From: 54.89.108.253 [axios/0.20.0
+	] - Content-Type: application/json;charset=utf-8 - Token Ending: e9851
+	2021-06-13 17: 31: 23: Raw payload: [
+		{
+			"variable": "parse_error",
+			"value": "Function Parse Error: TypeError: Cannot read property 'value' of undefined"
 		}
-	},
-	{
-		"variable": "gtw_location",
-		"value": "GTW",
-		"location": {
-			"lat": -38.292618,
-			"lng": 144.99622
+	]
+	2021-06-13 17: 31: 23: Result of [LoRaWAN TTI/TTN v3
+	] payload parser: [
+		{
+			"variable": "parse_error",
+			"value": "Function Parse Error: TypeError: Cannot read property 'value' of undefined"
 		}
-	}
-]
-
-2020-11-10 21:44:07: Bucket [14e2]: 28 Data Added
-------
-2020-11-10 21:44:07: [POST] HTTP Request: From: 3.236.79.30 [axios/0.19.2] - Content-Type: application/json;charset=utf-8 - Token Ending: b25df
-2020-11-10 21:44:07: Raw payload: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
-2020-11-10 21:44:07: Result of [LoRaWAN TTN] payload parser: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
-2020-11-10 21:44:07: Result of [Custom The Things Network ] payload parser: [{"variable":"downlink_url","value":"https://integrations.thethings.meshed.com.au/tago/api/v2/down/winston_weather/tago1?key=ttn-account-v2.HoQtYBUjBaN0J1HvacuBoYKpI4aIeUbBrtw1cPJRxZA","serie":45,"metadata":{}}]
-2020-11-10 21:44:07: Error on [device] payload parser: {}
-------
+	]
+	2021-06-13 17: 31: 23: Error on [device
+	] payload parser: {}
+	------
+	2021-06-13 17: 31: 23: [POST
+	] HTTP Request: From: 54.89.108.253 [axios/0.20.0
+	] - Content-Type: application/json;charset=utf-8 - Token Ending: e9851
+	2021-06-13 17: 31: 23: Raw payload: [
+		{
+			"variable": "application_id",
+			"value": "winston-weather-21",
+			"serie": "1623569483091",
+			"metadata": null
+		},
+		{
+			"variable": "device_id",
+			"value": "weather-stn-01",
+			"serie": "1623569483091",
+			"metadata": null
+		},
+		{
+			"variable": "downlink_key",
+			"value": "NNSXS.47D4MSWGJSQG2IMD6W7XKF2FGICRGOGMSZ5B7EI.66IEDN2GX5KALZVWLVOGKYKAQQPHGF6A7JSLE5BVIDVL3WD2UPQA",
+			"serie": "1623569483091",
+			"metadata": {
+				"url": "https://au1.cloud.thethings.network/api/v3/as/applications/winston-weather-21/webhooks/tagoio-v3/devices/weather-stn-01/down/push"
+			}
+		},
+		{
+			"variable": "ttn_payload_v3",
+			"value":"{\"end_device_ids\":{\"device_id\":\"weather-stn-01\",\"application_ids\":{\"application_id\":\"winston-weather-21\"},\"dev_eui\":\"8B7233763E54D258\",\"join_eui\":\"0000000000000000\",\"dev_addr\":\"260DC4B8\"},
+			\"correlation_ids\":[\"as:up:01F824GH4TXM5646K62PSWEVDQ\",\"ns:uplink:01F824GGY9FMKPQFKDJS84WWPJ\",\"pba:conn:up:01F7XM3ZM7G1E643C2NNVPK3QC\",\"pba:uplink:01F824GGWQR7MRFCFW2MSM2VRN\",\"rpc:/ttn.lorawan.v3.GsNs/HandleUplink:01F824GGY9YEAWDBAKXQ57359B\",\"rpc:/ttn.lorawan.v3.NsAs/HandleUplink:01F824GH4SFF620ZF01XN8KJZR\"],
+			\"received_at\":\"2021-06-13T07:31:22.906851214Z\",
+			\"uplink_message\":{\"session_key_id\":\"AXoDzErDYlO+bpVjBfUKgw==\",\"f_port\":1,\"f_cnt\":28,\"frm_payload\":\"AAA5AU8E6ANQJwAAAAArAAAAigQ=\",
+				\"decoded_payload\":{\"baropress\":1006.4,\"casetemp\":16.200000000000003,\"dailyraintl\":0,\"devicetemp\":16.200000000000003,\"field1\":0,\"field2\":10.299999999999997,\"field3\":100,\"field4\":1006.4,\"field5\":0,\"field6\":0,\"field7\":-47,\"field8\":0,\"field9\":313,\"humidity\":100,\"rainfallrate\":0,\"temp\":10.299999999999997,\"winddirn\":-47,\"windgust\":0,\"windgustdir\":313,\"windspeed\":0},
+	
+			\"rx_metadata\":[{\"gateway_ids\":{\"gateway_id\":\"packetbroker\"},
+				\"packet_broker\":
+				{\"message_id\":\"01F824GGWQR7MRFCFW2MSM2VRN\",\"forwarder_net_id\":\"000013\",\"forwarder_tenant_id\":\"ttn\",\"forwarder_cluster_id\":\"ttn-v2-au\",\"home_network_net_id\":\"000013\",\"home_network_tenant_id\":\"ttn\",\"home_network_cluster_id\":\"ttn-au1\",\"hops\":[{\"received_at\":\"2021-06-13T07:31:22.647991312Z\",\"sender_address\":\"52.62.83.250\",\"receiver_name\":\"router-dataplane-7c6697548d-5hmwf\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"},
+				{\"received_at\":\"2021-06-13T07:31:22.648799095Z\",\"sender_name\":\"router-dataplane-7c6697548d-5hmwf\",\"sender_address\":\"forwarder_uplink\",\"receiver_name\":\"router-664bbb5bd5-xz8zg\",\"receiver_agent\":\"pbrouter/1.6.0-beta.3 go/1.16.4 linux/amd64\"},
+				{\"received_at\":\"2021-06-13T07:31:22.650014395Z\",\"sender_name\":\"router-664bbb5bd5-xz8zg\",\"sender_address\":\"deliver.000013_ttn_ttn-au1.uplink\",\"receiver_name\":\"router-dataplane-7c6697548d-5hmwf\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"}]},
+	
+				\"time\":\"2021-06-13T07:31:22.527717113Z\",\"rssi\":-82,\"channel_rssi\":-82,\"snr\":10,\"uplink_token\":\"eyJnIjoiWlhsS2FHSkhZMmxQYVVwQ1RWUkpORkl3VGs1VE1XTnBURU5LYkdKdFRXbFBhVXBDVFZSSk5GSXdUazVKYVhkcFlWaFphVTlwU1RObFZ6UjBVVlZOZVZFd09UUlRNVnBFV2toT2NVbHBkMmxrUjBadVNXcHZhVmg2WjNwaWJsSlBUVWhrVkdSVk9VZGhiRXBQWkZVeGIyRXllRk5WVTBvNUxubFBSRmRHVlc1Q1Vtc3dTVEl5VG14TmNsZFZhVUV1Ym5WdVlYWlFjSGxmVVV4SlYyZHJTeTU1TTNOd2MyTTBhemhWZDNkYWNIcEZWVFV4TjBKdVJUbGphR3RZYjNCTGJXaEZUMUpYUzBJeE5GWkpXbVI0UWtSV1psbHhiVUZpUTBONlZuRklNMlpJZGs5elpIcEVSMHR4VjJoUGNGRllTMmRXVDJ0RldHVlFXSFJOYTNwUU0zVmpVMHRHTlZaVk5XcDNWRGgxWmt0eGJrNUJVVWx0TVZwQmNGRjBhV1JDYTFCSU1HSnpRMDFOZGtwTGFIRXdaVlZtUjBWb2VGQnpSRGhpZEVSdE9YQlhaaTFoU2pKc04xRk1USFJzTGxSb1l6aFRVMHd4ZEcxU2REaDFWMDVQWkdaUVRGRT0iLCJhIjp7ImZuaWQiOiIwMDAwMTMiLCJmdGlkIjoidHRuIiwiZmNpZCI6InR0bi12Mi1hdSJ9fQ==\"},{\"gateway_ids\":{\"gateway_id\":\"packetbroker\"},
+				
+				\"packet_broker\":
+				{\"message_id\":\"01F824GGWX8QW0V9AY2RA2Y43T\",\"forwarder_net_id\":\"000013\",\"forwarder_tenant_id\":\"ttn\",\"forwarder_cluster_id\":\"ttn-v2-au\",\"home_network_net_id\":\"000013\",\"home_network_tenant_id\":\"ttn\",\"home_network_cluster_id\":\"ttn-au1\",\"hops\":[{\"received_at\":\"2021-06-13T07:31:22.653330957Z\",\"sender_address\":\"52.62.83.250\",\"receiver_name\":\"router-dataplane-7c6697548d-5jz7g\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"},{\"received_at\":\"2021-06-13T07:31:22.654663060Z\",\"sender_name\":\"router-dataplane-7c6697548d-5jz7g\",\"sender_address\":\"forwarder_uplink\",\"receiver_name\":\"router-664bbb5bd5-lsm26\",\"receiver_agent\":\"pbrouter/1.6.0-beta.3 go/1.16.4 linux/amd64\"},{\"received_at\":\"2021-06-13T07:31:22.655539617Z\",\"sender_name\":\"router-664bbb5bd5-lsm26\",\"sender_address\":\"deliver.000013_ttn_ttn-au1.uplink\",\"receiver_name\":\"router-dataplane-7c6697548d-5jz7g\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"}]},\"rssi\":-115,\"channel_rssi\":-115,\"snr\":-7.8,\"uplink_token\":\"eyJnIjoiWlhsS2FHSkhZMmxQYVVwQ1RWUkpORkl3VGs1VE1XTnBURU5LYkdKdFRXbFBhVXBDVFZSSk5GSXdUazVKYVhkcFlWaFphVTlwU2xsWmEyTXlWVWhDVEdWclpHNVdXRWt4VlhwT1NVbHBkMmxrUjBadVNXcHZhV1J0TVRKaFZscHJWSHBPU1ZWdVFrWk9NMDVKVVRCYU1GcDZXalJSVT
+	2021-06-13 17: 31: 23: Result of [LoRaWAN TTI/TTN v3
+			] payload parser: [
+				{
+					"variable": "application_id",
+					"value": "winston-weather-21",
+					"serie": "1623569483091",
+					"metadata": null
+				},
+				{
+					"variable": "device_id",
+					"value": "weather-stn-01",
+					"serie": "1623569483091",
+					"metadata": null
+				},
+				{
+					"variable": "downlink_key",
+					"value": "NNSXS.47D4MSWGJSQG2IMD6W7XKF2FGICRGOGMSZ5B7EI.66IEDN2GX5KALZVWLVOGKYKAQQPHGF6A7JSLE5BVIDVL3WD2UPQA",
+					"serie": "1623569483091",
+					"metadata": {
+						"url": "https://au1.cloud.thethings.network/api/v3/as/applications/winston-weather-21/webhooks/tagoio-v3/devices/weather-stn-01/down/push"
+					}
+				},
+				{
+					"variable": "baropress",
+					"value": 1006.4,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "casetemp",
+					"value": 16.200000000000003,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "dailyraintl",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "devicetemp",
+					"value": 16.200000000000003,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field1",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field2",
+					"value": 10.299999999999997,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field3",
+					"value": 100,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field4",
+					"value": 1006.4,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field5",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field6",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field7",
+					"value": -47,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field8",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "field9",
+					"value": 313,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "humidity",
+					"value": 100,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "rainfallrate",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "temp",
+					"value": 10.299999999999997,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "winddirn",
+					"value": -47,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "windgust",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "windgustdir",
+					"value": 313,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "windspeed",
+					"value": 0,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "lora_bandwidth",
+					"value": 125000,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "lora_spreading_factor",
+					"value": 7,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "data_rate_index",
+					"value": 5,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "coding_rate",
+					"value": "4/5",
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "frequency",
+					"value": "917400000",
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "fport",
+					"value": 1,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "fcnt",
+					"value": 28,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "gateway_eui",
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "rssi",
+					"value": -82,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "snr",
+					"value": 10,
+					"serie": "1623569483091"
+				},
+				{
+					"variable": "frm_payload",
+					"value": "000039014f04e8035027000000002b0000008a04",
+					"serie": "1623569483091"
+				}
+			]
+	2021-06-13 17: 31: 23: Error on [device
+			] payload parser: {}
+	------
+	2021-06-13 21:01:14: [POST] HTTP Request: From: 52.91.70.103 [axios/0.20.0] - Content-Type: application/json;charset=utf-8 - Token Ending: e9851
+	2021-06-13 21:01:14: Raw payload: [{"variable":"application_id","value":"winston-weather-21","serie":"1623582074767","metadata":null},{"variable":"device_id","value":"weather-stn-01","serie":"1623582074767","metadata":null},{"variable":"downlink_key","value":"NNSXS.47D4MSWGJSQG2IMD6W7XKF2FGICRGOGMSZ5B7EI.66IEDN2GX5KALZVWLVOGKYKAQQPHGF6A7JSLE5BVIDVL3WD2UPQA","serie":"1623582074767","metadata":{"url":"https://au1.cloud.thethings.network/api/v3/as/applications/winston-weather-21/webhooks/tagoio-v3/devices/weather-stn-01/down/push"}},{"variable":"ttn_payload_v3","value":"{\"end_device_ids\":{\"device_id\":\"weather-stn-01\",\"application_ids\":{\"application_id\":\"winston-weather-21\"},\"dev_eui\":\"8B7233763E54D258\",\"join_eui\":\"0000000000000000\",\"dev_addr\":\"260DC4B8\"},\"correlation_ids\":[\"as:up:01F82GGSESZMW7046547EAK47C\",\"ns:uplink:01F82GGS87MFB7YM9S0BB617NN\",\"pba:conn:up:01F7XM3ZM7G1E643C2NNVPK3QC\",\"pba:uplink:01F82GGS6N8PQVVNG25QC1JE6T\",\"rpc:/ttn.lorawan.v3.GsNs/HandleUplink:01F82GGS878P9VBTTE70CJTDPG\",\"rpc:/ttn.lorawan.v3.NsAs/HandleUplink:01F82GGSERMK0BT6R4PF4HM6S7\"],\"received_at\":\"2021-06-13T11:01:14.330555601Z\",\"uplink_message\":{\"session_key_id\":\"AXoDzErDYlO+bpVjBfUKgw==\",\"f_port\":1,\"f_cnt\":70,\"frm_payload\":\"HACOAD8E6ANZJwAAHADoAAAAagQ=\",\"decoded_payload\":{\"baropress\":1007.3,\"casetemp\":13,\"dailyraintl\":0,\"devicetemp\":13,\"field1\":2.8,\"field2\":8.700000000000003,\"field3\":100,\"field4\":1007.3,\"field5\":0,\"field6\":2.8,\"field7\":142,\"field8\":0,\"field9\":142,\"humidity\":100,\"rainfallrate\":0,\"temp\":8.700000000000003,\"winddirn\":142,\"windgust\":2.8,\"windgustdir\":142,\"windspeed\":2.8},\"rx_metadata\":[{\"gateway_ids\":{\"gateway_id\":\"packetbroker\"},\"packet_broker\":{\"message_id\":\"01F82GGS6N8PQVVNG25QC1JE6T\",\"forwarder_net_id\":\"000013\",\"forwarder_tenant_id\":\"ttn\",\"forwarder_cluster_id\":\"ttn-v2-au\",\"home_network_net_id\":\"000013\",\"home_network_tenant_id\":\"ttn\",\"home_network_cluster_id\":\"ttn-au1\",\"hops\":[{\"received_at\":\"2021-06-13T11:01:14.069832068Z\",\"sender_address\":\"52.62.83.250\",\"receiver_name\":\"router-dataplane-7c6697548d-5jz7g\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"},{\"received_at\":\"2021-06-13T11:01:14.070283340Z\",\"sender_name\":\"router-dataplane-7c6697548d-5jz7g\",\"sender_address\":\"forwarder_uplink\",\"receiver_name\":\"router-664bbb5bd5-xz8zg\",\"receiver_agent\":\"pbrouter/1.6.0-beta.3 go/1.16.4 linux/amd64\"},{\"received_at\":\"2021-06-13T11:01:14.071958736Z\",\"sender_name\":\"router-664bbb5bd5-xz8zg\",\"sender_address\":\"deliver.000013_ttn_ttn-au1.uplink\",\"receiver_name\":\"router-dataplane-7c6697548d-5hmwf\",\"receiver_agent\":\"pbdataplane/1.6.0-beta.3 go/1.16.4 linux/amd64\"}]},\"time\":\"2021-06-13T11:01:13.974567890Z\",\"rssi\":-91,\"channel_rssi\":-91,\"snr\":10.5,\"uplink_token\":\"eyJnIjoiWlhsS2FHSkhZMmxQYVVwQ1RWUkpORkl3VGs1VE1XTnBURU5LYkdKdFRXbFBhVXBDVFZSSk5GSXdUazVKYVhkcFlWaFphVTlwU1RSaE1IUm9ZakJHY0ZkRk9VcFhiVW95VGtoc1FrbHBkMmxrUjBadVNXcHZhVnBZVGt4V1dFNXdUMFpvTkdONmJEUldTRXBTWld0U1MySnRaRFZhZVVvNUxsSnRkbDg0TkZob1UxcE1jMFpQUzNsalNTMXNOVUV1TjBFeVRHZDBVRkJOVEVWMFVWaEhNQzVLT0ROa2VubzJXa1JVVDBJNE9WUjZRbVpNV2xwaWMzTk9WemN6YTNSc1JHWjNUVEJOZDJKM1dUVXdRMFl6UnpSbFlrMW5WbTVYYmpaSFdXOVpjV0owWkVWbU5YVnFNSFUwZFRsbWRuUkZPRWxtU2tsVVprRmhSVzlrT0VoSldFOWpSVVV4ZERaQ2EwbHZTMHRZWTFsdU5YWndkWFJoZVRVeE5ESXpXRmxaVmtWUFVXOXVMVXRZTmxkUlMzbE5SSGhzTmxKR2MwSkdhMU5KVWpBeVExZEJkRGRCT1VoNE9DNDJTM1pwUjNVek1rOVpRMlJMUldObWJrRndSRVYzIiwiYSI6eyJmbmlkIjoiMDAwMDEzIiwiZnRpZCI6InR0biIsImZjaWQiOiJ0dG4tdjItYXUifX0=\"}],\"settings\":{\"data_rate\":{\"lora\":{\"bandwidth\":125000,\"spreading_factor\":7}},\"data_rate_index\":5,\"coding_rate\":\"4/5\",\"frequency\":\"917000000\"},\"received_at\":\"2021-06-13T11:01:14.119471620Z\",\"consumed_airtime\":\"0.071936s\",\"locations\":{\"user\":{\"latitude\":-38.293,\"longitude\":144.996,\"altitude\":105,\"source\":\"SOURCE_REGISTRY\"}}}}","serie":"1623582074767","metadata":null}]
+	2021-06-13 21:01:14: Result of [LoRaWAN TTI/TTN v3] payload parser: [{"variable":"application_id","value":"winston-weather-21","serie":"1623582074767","metadata":null},{"variable":"device_id","value":"weather-stn-01","serie":"1623582074767","metadata":null},{"variable":"downlink_key","value":"NNSXS.47D4MSWGJSQG2IMD6W7XKF2FGICRGOGMSZ5B7EI.66IEDN2GX5KALZVWLVOGKYKAQQPHGF6A7JSLE5BVIDVL3WD2UPQA","serie":"1623582074767","metadata":{"url":"https://au1.cloud.thethings.network/api/v3/as/applications/winston-weather-21/webhooks/tagoio-v3/devices/weather-stn-01/down/push"}},{"variable":"baropress","value":1007.3,"serie":"1623582074767"},{"variable":"casetemp","value":13,"serie":"1623582074767"},{"variable":"dailyraintl","value":0,"serie":"1623582074767"},{"variable":"devicetemp","value":13,"serie":"1623582074767"},{"variable":"field1","value":2.8,"serie":"1623582074767"},{"variable":"field2","value":8.700000000000003,"serie":"1623582074767"},{"variable":"field3","value":100,"serie":"1623582074767"},{"variable":"field4","value":1007.3,"serie":"1623582074767"},{"variable":"field5","value":0,"serie":"1623582074767"},{"variable":"field6","value":2.8,"serie":"1623582074767"},{"variable":"field7","value":142,"serie":"1623582074767"},{"variable":"field8","value":0,"serie":"1623582074767"},{"variable":"field9","value":142,"serie":"1623582074767"},{"variable":"humidity","value":100,"serie":"1623582074767"},{"variable":"rainfallrate","value":0,"serie":"1623582074767"},{"variable":"temp","value":8.700000000000003,"serie":"1623582074767"},{"variable":"winddirn","value":142,"serie":"1623582074767"},{"variable":"windgust","value":2.8,"serie":"1623582074767"},{"variable":"windgustdir","value":142,"serie":"1623582074767"},{"variable":"windspeed","value":2.8,"serie":"1623582074767"},{"variable":"lora_bandwidth","value":125000,"serie":"1623582074767"},{"variable":"lora_spreading_factor","value":7,"serie":"1623582074767"},{"variable":"data_rate_index","value":5,"serie":"1623582074767"},{"variable":"coding_rate","value":"4/5","serie":"1623582074767"},{"variable":"frequency","value":"917000000","serie":"1623582074767"},{"variable":"fport","value":1,"serie":"1623582074767"},{"variable":"fcnt","value":70,"serie":"1623582074767"},{"variable":"gateway_eui","serie":"1623582074767"},{"variable":"rssi","value":-91,"serie":"1623582074767"},{"variable":"snr","value":10.5,"serie":"1623582074767"},{"variable":"frm_payload","value":"1c008e003f04e803592700001c00e80000006a04","serie":"1623582074767"}]
+	2021-06-13 21:01:14: Log from [device] payload parser: start push
+	2021-06-13 21:01:14: Result of [device] payload parser: 
+	{"variable":"casetemp","value":13,"serie":"1623582074767"},
+	{"variable":"field1","value":2.8,"serie":"1623582074767"},
+	{"variable":"field2","value":8.700000000000003,"serie":"1623582074767"},
+	{"variable":"field3","value":100,"serie":"1623582074767"},
+	{"variable":"field4","value":1007.3,"serie":"1623582074767"},
+	{"variable":"field5","value":0,"serie":"1623582074767"},
+	{"variable":"field6","value":2.8,"serie":"1623582074767"},
+	{"variable":"field7","value":142,"serie":"1623582074767"},
+	{"variable":"field8","value":0,"serie":"1623582074767"},
+	{"variable":"field9","value":142,"serie":"1623582074767"},
+	{"variable":"temp","value":8.700000000000003,"serie":"1623582074767"},
+	{"variable":"winddirloc","value":"SE","location":{"lat":-38.32441027,"lng":145.0367449}},
+	{"variable":"gtw_location","value":"GTW","location":{"lat":-38.292618,"lng":144.99622}}]
+	2021-06-13 21:01:14: Bucket [14e2]: 13 Data Added

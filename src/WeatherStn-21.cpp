@@ -30,18 +30,11 @@
  *                    ::  OTA Activation of LoraWAN TTN v3
  *                    ::  Introduction of replacement humidity sensor SHT-31D
  * 
- *                 LMIC-node uses the concepts from the original ttn-otaa.ino 
- *                 and ttn-abp.ino examples provided with the LMIC libraries.
- *                 LMIC-node combines both OTAA and ABP support in a single example,
- *                 supports multiple LMIC libraries, contains several improvements
- *                 and enhancements like display support, support for downlinks,
- *                 separates LoRaWAN keys from source code into a separate keyfile,
- *                 provides formatted output to serial port and display
- *                 and supports many popular development boards out of the box.
- *                 To get a working node up and running only requires some configuration.
- *                 No programming or customization of source code required.
+ *                  Multiple functions from LMIC-node have been left in place for future
+ *                  flexibility, even if no longer invoked in this version of WeatherStn
  * 
- *  Dependencies:  External libraries:
+ * 
+ *  LMIC-node Dependencies:  External libraries:
  *                 MCCI LoRaWAN LMIC library  https://github.com/mcci-catena/arduino-lmic
  *                 IBM LMIC framework         https://github.com/matthijskooijman/arduino-lmic  
  *                 U8g2                       https://github.com/olikraus/u8g2
@@ -77,8 +70,8 @@
 #define RG11_Pin  19        		 // Interrupt pin for rain sensor
 #define BounceInterval  15		// Number of ms to allow for debouncing
 #define SampleInt_Pin   3		// Interrupt pin for RTC-generated sampling clock (when used)
-#define SHT31_Addr 0x44         //  Humidity sensor primary I2C address
-#define HighHumidityLevel 950   //  95% Reltive humidity
+#define SHT31_Addr 0x44         //  Second humidity sensor primary I2C address
+#define HighHumidityLevel 950   //  95% Reltive humidity - above which, sensor heater is applied
 
 // Set timer related settings for sensor sampling & calculation
 #define Timing_Clock  500000    //  0.5sec in millis
@@ -107,14 +100,14 @@ typedef struct obsSet {
 	uint16_t 	windGustX10; // observed windgust speed (km/h) X10  ~range 0 -> 1200
 	uint16_t	windGustDir; // observed wind direction of Gust (compass degrees)  0 -> 359
 	uint16_t	tempX10;	// observed temp (°C) +100 x 10   ~range -200->600
-	uint16_t	humidX10;	// observed relative humidty (%) x 10   range 0->1000
+	uint16_t	humidX10;	// observed relative humidty (%) x 10  from BME280 range 0->1000
 	uint16_t 	pressX10;	// observed barometric pressure at station level (hPa)  x 10  ~range 8700 -> 11000 
 	uint16_t	rainflX10;	// observed accumulated rainfall (mm) x10   ~range 0->1200
 	uint16_t	windspX10;	// observed windspeed (km/h) x10 ~range 0->1200
 	uint16_t	windDir;	// observed wind direction (compass degrees)  range 0->359
 	uint16_t	dailyRainX10; //  accumulated rainfall (mm) X10 for period to 9am daily
-	uint16_t	casetempX10;		// station case temperature (for alarming)
-    uint16_t    humid2X10;  // observed relative humidity (%) x 10 from additional sensor
+	uint16_t	casetempX10;	// station case temperature (for alarming)
+    uint16_t    humid2X10;  // observed relative humidity (%) x10 from additional sensor
  } obsSet;
 		
 union obsPayload
@@ -152,8 +145,9 @@ const unsigned TX_INTERVAL = 300 ;		// 5 min reporting cycle
 const int EOD_HOUR = 9;			// Daily totals are reset at 9am (local);
 
 //  Create temp & humidity sensor objects
-BME280_I2C bme;     // I2C using address 0x77
-Adafruit_SHT31 sht31 = Adafruit_SHT31();
+BME280_I2C bme;     // I2C using address 0x77  Now used for pressure (not humidity nor temp)
+Adafruit_SHT31 sht31 = Adafruit_SHT31();  // Second humidity sensor.  Added following condensation 
+                                          // issues with BME280 (which is retained as pressure sensor)
 
 // Setup a oneWire instance to communicate with OneWire devices
 OneWire oneWire(ONE_WIRE_BUS_PIN);
@@ -1146,7 +1140,7 @@ void setup()
 }
 
 
-void loop() 
+void loop()     
 {
     ostime_t timestamp;
 
@@ -1173,7 +1167,8 @@ void loop()
 		if (sampleCount == Report_Interval) {
             timestamp = os_getTime();
 
-			processWork(timestamp);
+			processWork(timestamp);     // called directly from loop() rather than LMIC-node 
+                                        //  approach of separate doWorkJob()
 
             if (highHumidity) {             //  Turn on heater for start of new report interval
                 enableHeater = true;

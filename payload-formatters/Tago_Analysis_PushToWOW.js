@@ -18,7 +18,7 @@ async function postToHTTP(context) {
   const device = new Device({ token: env_vars.device_token });
 
     //  Fields of the TTN payload as captured in Device
-  const dataFields = ["field1","field2","field3","field4","field5","field6","field7","field8","field9"];
+  const dataFields = ["field1","field2","humidity2","field4","field5","field6","field7","field8","field9"];
 
    // create the filter options to get the last-entered set of obs data from TagoIO
   const filter = {
@@ -77,7 +77,7 @@ async function postToHTTP(context) {
       dewptf: (alpha * 243.12/(17.62 - alpha)) * 9/5 +32,
       windgustmph: resultArray[0].value/1.609,
       windgustdir: resultArray[8].value,
-      softwaretype: env_vars.softwaretype
+  //    softwaretype: env_vars.softwaretype
     },
     //
     // How to send a HTTP Body:
