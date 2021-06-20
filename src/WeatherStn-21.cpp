@@ -71,7 +71,7 @@
 #define BounceInterval  15		// Number of ms to allow for debouncing
 #define SampleInt_Pin   3		// Interrupt pin for RTC-generated sampling clock (when used)
 #define SHT31_Addr 0x44         //  Second humidity sensor primary I2C address
-#define HighHumidityLevel 950   //  95% Reltive humidity - above which, sensor heater is applied
+#define HighHumidityLevel 975   //  97.5% Reltive humidity - above which, sensor heater is applied
 
 // Set timer related settings for sensor sampling & calculation
 #define Timing_Clock  500000    //  0.5sec in millis
@@ -137,7 +137,7 @@ int boxcar[count];					// stack of wind direction values for averaging calculati
 const bool BaseRange = true;
 const bool ExtdRange = false;
 bool enableHeater = false;        // SHT31 sensor heater
-bool highHumidity = false;        // flags a high humidity (>95%) condition
+bool highHumidity = false;        // flags a high humidity (> HighHumidityLevel e.g.97%) condition
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
@@ -1149,8 +1149,8 @@ void loop()
 		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
 		bme.readSensor();					// Read humidity & barometric pressure
 
-        if (enableHeater && (sampleCount > Report_Interval/2) ) {    
-            enableHeater = false;           //Turn off heater for 2nd half of interval to
+        if (enableHeater && (sampleCount > Report_Interval/4) ) {    
+            enableHeater = false;           //Turn off heater after a quarter of interval to
             sht31.heater(enableHeater);     //    avoid measurement bias
         }
 
