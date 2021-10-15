@@ -27,7 +27,7 @@
 #ifndef SD2405RTC_h
 #define SD2405RTC_h
 
-#include <Time.h>
+#include <TimeLib.h>
 
 // library interface description
 class SD2405RTC
