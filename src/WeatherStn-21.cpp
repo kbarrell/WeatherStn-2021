@@ -46,17 +46,19 @@
 #include "LMIC-node.h"        //Handling of mulit-board generalised LMIC integration
 
 #include <SPI.h>
-#include <cactus_io_BME280_I2C.h>
+//#include <cactus_io_BME280_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Adafruit_SHT31.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP3XX.h>
 
 #include "TimerOne.h"     // Timer Interrupt set to 2.5 sec for read sensors
 #include <math.h>
 #include <Wire.h>         // For accessing RTC
-#include <SD2405RTC.h>    // For Gravity RTC breakout board.   Set RTC to UTC time
 #include <TimeLib.h>      // For epoch time en/decode
 #include <Timezone.h>	  // For AU Eastern STD/DST so that daily readings are 24hr to 9am (local)
+#include <SD2405RTC.h>    // For Gravity RTC breakout board.   Set RTC to UTC time
 
 // Sensor-related definitions
 // Set hardware pin assignments & pre-set constants
@@ -145,7 +147,8 @@ const unsigned TX_INTERVAL = 300 ;		// 5 min reporting cycle
 const int EOD_HOUR = 9;			// Daily totals are reset at 9am (local);
 
 //  Create temp & humidity sensor objects
-BME280_I2C bme;     // I2C using address 0x77  Now used for pressure (not humidity nor temp)
+Adafruit_BMP3XX bmp;   // I2C using address 0x77.   Replaces failed BME280 sensor
+//BME280_I2C bme;     // I2C using address 0x77  No longer used.
 Adafruit_SHT31 sht31 = Adafruit_SHT31();  // Second humidity sensor.  Added following condensation 
                                           // issues with BME280 (which is retained as pressure sensor)
 
@@ -850,6 +853,8 @@ int average(int value)
   return sum/count;
 }
 
+
+
 // Get Wind Direction
 void getWindDirection(bool baseRange) {
 	static int recentAvgDirn = 0;		// average of last 3 adjusted measurements
@@ -951,8 +956,9 @@ void processWork(ostime_t doWorkJobTimeStamp)
 		sensorObs[currentObs].obsReport.windGustX10 = windGust * 10.0;
 		sensorObs[currentObs].obsReport.windGustDir = calGustDirn;
 		sensorObs[currentObs].obsReport.tempX10 = (DSsensors.getTempC(airTempAddr)+ 100.0)* 10.0;
-		sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
-		sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
+        sensorObs[currentObs].obsReport.pressX10 = bmp.pressure / 10.0;
+	//	sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
+	//	sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
 		sensorObs[currentObs].obsReport.rainflX10 = obsReportRainfallRate * 10.0;
 		sensorObs[currentObs].obsReport.windspX10 = windSpeed * 10.0;
 		sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
@@ -1092,8 +1098,8 @@ void setup()
 	DSsensors.setResolution(airTempAddr, 12);
 	DSsensors.setResolution(caseTempAddr, 10);
  
-	if (!bme.begin())  {    
-      Serial.println("Could not find BME280 sensor -  check wiring");
+	if (!bmp.begin_I2C())  {    
+      Serial.println("Could not find BMP380 sensor -  check wiring");
      while (1);
 	}
 
@@ -1147,7 +1153,11 @@ void loop()
     if(isSampleRequired) {
 		sampleCount++;
 		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
-		bme.readSensor();					// Read humidity & barometric pressure
+	//	bme.readSensor();					// Read humidity & barometric pressure
+        if (! bmp.performReading()) {
+            Serial.println("Failed to perform reading :(");
+            return;
+        }
 
         if (enableHeater && (sampleCount > Report_Interval/4) ) {    
             enableHeater = false;           //Turn off heater after a quarter of interval to
