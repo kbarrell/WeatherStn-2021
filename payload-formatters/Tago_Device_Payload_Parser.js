@@ -35,10 +35,18 @@ const black_list = [
   'frm_payload'];
 //
 //  Leaves the following variables (whitelist - info only) to be passed through filter
-//  variables white_list = ['field1', 'field2', 'field3', 'field4', 'field5', 'field6', 'field7', 'field8', 'field9','timestamp','casetemp' ]
+//  variables white_list = ['field1', 'field2', 'field3', 'field4', 'field5', 'field6', 'field7', 'field8', 'field9','timestamp','devicetemp','latitude','longitude']
 
 // Remove the unwanted variables.
 payload = payload.filter(x => !black_list.includes(x.variable));
+console.log("payload filtered");
+
+// Check for power reset occurrence - temps = -100
+const tempMeas = payload.find(x => x.variable === "field2");
+if (tempMeas.value < -90) {
+  payload.length = 0;     // clear out payload contents
+  console.log("payload cleared");
+} else {
 
 // Set up map locations to be used for plotting wind directions on map widget
 const compassPts = [
@@ -63,6 +71,7 @@ const compassPts = [
 var index = 0;
 //  Find compass point for reported wind direction 
 const windDir = payload.find(x => x.variable === "field7");
+var currentSerie = windDir.serie;
 //const gtw_lat = payload.find(x => x.variable === "latitude");       // TTNv3 doesn't source lat & long in the payload
 //const gtw_lng = payload.find(x => x.variable === "longitude");      //  unlike TTNv2.  It's in the metadata variable though
 var normalDir = windDir.value;
@@ -76,8 +85,9 @@ if (normalDir < 349) {
   index = Math.round((windDir.value)/22.5);
 }
 
-//  Add the mapping point variables to the decoded payload output
-payload.push({"variable":"winddirloc","value": compassPts[index][0], "location":{"lat":compassPts[index][1],"lng":compassPts[index][2]}});
-// As site location is static, following could easily be set from compassPts array, but leave it general as delivered through TTN
-//payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":gtw_lat.value,"lng":gtw_lng.value}});
-payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":compassPts[16][1],"lng":compassPts[16][2]}});
+ //  Add the mapping point variables to the decoded payload output
+ payload.push({"variable":"winddirloc","value": compassPts[index][0], "location":{"lat":compassPts[index][1],"lng":compassPts[index][2]}, "serie": currentSerie});
+ // As site location is static, following could easily be set from compassPts array, but leave it general as delivered through TTN
+ //payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":gtw_lat.value,"lng":gtw_lng.value}});
+ payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":compassPts[16][1],"lng":compassPts[16][2]}, "serie": currentSerie});
+}
