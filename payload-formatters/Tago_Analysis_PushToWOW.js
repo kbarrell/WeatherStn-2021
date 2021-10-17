@@ -52,7 +52,7 @@ async function postToHTTP(context) {
         stdWindDirn = stdWindDirn - 360;
   }
   // context.log(stdWindDirn);
-
+  // context.log(resultArray[0].time);
 
 
  //   construct the POST with query parameters as per WOW requirements (imperial units)
@@ -77,7 +77,7 @@ async function postToHTTP(context) {
       dewptf: (alpha * 243.12/(17.62 - alpha)) * 9/5 +32,
       windgustmph: resultArray[0].value/1.609,
       windgustdir: resultArray[8].value,
-  //    softwaretype: env_vars.softwaretype
+      softwaretype: env_vars.softwaretype
     },
     //
     // How to send a HTTP Body:
