@@ -46,13 +46,11 @@
 #include "LMIC-node.h"        //Handling of mulit-board generalised LMIC integration
 
 #include <SPI.h>
-//#include <cactus_io_BME280_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Adafruit_SHT31.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP3XX.h>
-
 #include "TimerOne.h"     // Timer Interrupt set to 2.5 sec for read sensors
 #include <math.h>
 #include <Wire.h>         // For accessing RTC
@@ -64,7 +62,6 @@
 // Set hardware pin assignments & pre-set constants
 #define TX_Pin 4 				   // used to indicate lora link tx via external LED
 #define ONE_WIRE_BUS_PIN 29 	  //Data bus pin for DS18B20's
-
 #define WindSensor_Pin (18)       //The pin location of the anemometer sensor
 #define WindVane_Pin  (A13)       // The pin connecting to the wind vane sensor
 #define VaneOffset  0		   // The anemometer offset from magnetic north
@@ -957,8 +954,6 @@ void processWork(ostime_t doWorkJobTimeStamp)
 		sensorObs[currentObs].obsReport.windGustDir = calGustDirn;
 		sensorObs[currentObs].obsReport.tempX10 = (DSsensors.getTempC(airTempAddr)+ 100.0)* 10.0;
         sensorObs[currentObs].obsReport.pressX10 = bmp.pressure / 10.0;
-	//	sensorObs[currentObs].obsReport.humidX10 = bme.getHumidity()*10.0;
-	//	sensorObs[currentObs].obsReport.pressX10 = bme.getPressure_MB()*10.0;
 		sensorObs[currentObs].obsReport.rainflX10 = obsReportRainfallRate * 10.0;
 		sensorObs[currentObs].obsReport.windspX10 = windSpeed * 10.0;
 		sensorObs[currentObs].obsReport.windDir =  calDirection +90;   // NB: Offset caters for extended range -90 to 450
@@ -1153,7 +1148,7 @@ void loop()
     if(isSampleRequired) {
 		sampleCount++;
 		DSsensors.requestTemperatures();    // Read temperatures from all DS18B20 devices
-	//	bme.readSensor();					// Read humidity & barometric pressure
+
         if (! bmp.performReading()) {
             Serial.println("Failed to perform reading :(");
             return;
