@@ -90,4 +90,14 @@ if (normalDir < 349) {
  // As site location is static, following could easily be set from compassPts array, but leave it general as delivered through TTN
  //payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":gtw_lat.value,"lng":gtw_lng.value}});
  payload.push({"variable":"gtw_location","value": compassPts[16][0], "location":{"lat":compassPts[16][1],"lng":compassPts[16][2]}, "serie": currentSerie});
+
+ 
+  // Calculate Apparent Temp
+  const relHumidity = payload.find(x => x.variable === "humidity2");
+  var factor = 17.27 * tempMeas.value / (tempMeas.value + 237.7);
+  var waterVapPress = relHumidity.value/100.0 * 6.105 * Math.exp(factor);
+  var windSpeed  = payload.find(x => x.variable === "field6");
+  var apparentTemp = tempMeas.value + 0.33 * waterVapPress - 0.7*windSpeed.value/3.6 -4.0;
+  payload.push({"variable":"apprnTemp","value": apparentTemp, "serie": currentSerie}); 
+
 }
