@@ -6,7 +6,7 @@ This repository holds the migration of my earlier Arduino weather station implem
 - Desire to move from Arduino IDE to a more functional development environment (**VSC**) and associated multi-target build platform **PlatformIO**.
 - Need to migrate the radio networking environment from **TTN**, The Things Network v2, to its replacement, **The Things Stack - Community Edition**, prior to the retirement of v2 operation in 2H21.
 - Desire to move to the TTN-preferred Over-The-Air Activation **OTAA** of the weather station node, in place of the static Activation By Personalisation **ABP** that the first implementation used.
-- Need to replace the humidity sensor (BME280) in the station node with a new model (SHT31-D) as it had become susceptible to condensation and thus produced erroneous readings of 100% RH for extended periods.  The BME280 is a multi-sensor breakout - it is retained in the implementation for barometric pressure measurement - its temperature and humidity readings are no longer used.
+- Need to replace the humidity sensor (BME280) in the station node with a new model (SHT31-D) as it had become susceptible to condensation and thus produced erroneous readings of 100% RH for extended periods.  The BME280 is a multi-sensor breakout - it was initially retained in the implementation for barometric pressure measurement - its temperature and humidity readings were no longer used.  Some months further on, the BME280 failed totally, and it has been replaced by a BMP388 for pressure measurement, prompting replacement of the sensor code library.
 
 To ease the challenge of the LMIC library migration and to adopt a more structured approach to its process environment setup and calling, I have adopted the comprehensive example, **LMIC-node**, provided by Leonel Parente's https://github.com/lnlp/LMIC-node.  LMIC-node provides a very complete build environment using PlatformIO, with multi-board, multi-region (i.e. radio regulation) targets. It illustrates a robust approach to developing a node that communicates via TTN.  A couple of notes on the LMIC-node code inclusion in WeatherStn-2021:
 
@@ -14,6 +14,13 @@ To ease the challenge of the LMIC library migration and to adopt a more structur
 - The majority of LMIC-node code was left in place, even if not invoked in the new design, as a hedge against future changes in the environment.
 - A new Board Support File for an atmMega2560 Arduino processor + Dragino Lora Shield was produced for the LMIC-node environment, to support the hardware platform retained from the original Weather Station implementation.
 - While the multi-board environment of LMIC-node offered the opportunity to re-build WeatherStn-2021 for more capable hardware, e.g. Adafruit Feather M0 Lora, the original WeatherStn design relies on the TimerOne library as a fundamental software interrupt scheduler.  The lack of a readily available TimerOne library for the atmelSAM environment of the Feather M0 became a roadblock, and that development path was suspended.
+
+Minor functionality enhancements have also been added by using the javascript capabilities of Tago.IO device payload parser and its Analysis scripting:
+ - reject as inconsistant, an incoming data set which has been impacted by a power loss of the weather station. This condition presents as multiple zero sensor readings
+ - calculate an Apparent ("feels like") temperature reading from observed temperature, humidity and windspeed values
+ - query a backend web system from a solar PV system on-site to calculate and report a solar radiation reading for incorporation in the weather station's reporting
+
+
 
 Note:  Please refer to the above-referenced repositories of the two major code components, for details of their design, capabilities and use.
 
