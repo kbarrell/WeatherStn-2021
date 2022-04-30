@@ -65,7 +65,7 @@
 #define WindSensor_Pin (18)       //The pin location of the anemometer sensor
 #define WindVane_Pin  (A13)       // The pin connecting to the wind vane sensor
 #define VaneOffset  0		   // The anemometer offset from magnetic north
-#define Bucket_Size  0.2 	   // mm bucket capacity to trigger tip count
+#define Bucket_Size  0.46 	   // mm bucket capacity to trigger tip count (= 0.2mm sensor bucket x 2.3 calibrated scaling)
 #define RG11_Pin  19        		 // Interrupt pin for rain sensor
 #define BounceInterval  15		// Number of ms to allow for debouncing
 #define SampleInt_Pin   3		// Interrupt pin for RTC-generated sampling clock (when used)
