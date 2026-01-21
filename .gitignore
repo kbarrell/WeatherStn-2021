@@ -6,6 +6,7 @@
 .vs
 .pioenvs
 .piolibdeps
+.DS_Store
 
 # Exclude all contents from any keyfiles folder
 keyfiles/**
